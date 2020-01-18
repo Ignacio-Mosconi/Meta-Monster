@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 
 namespace GreenNacho.UI
@@ -9,63 +8,50 @@ namespace GreenNacho.UI
 
     public class AppNavigator : MonoBehaviourSingleton<AppNavigator>
     {
+        [Header("Main Canvas")]
+        [SerializeField] Canvas appCanvas = default;
+
         [Header("App Screen References")]
-        [SerializeField] AppScreen firstScreen = default;
+        [SerializeField] AppScreen splashScreen = default;
         
         [Header("Animation References")]
-        [SerializeField] SlideAnimation backHeaderAnimation = default;
-        [SerializeField] SlideAnimation appHeaderAnimation = default;
-        [SerializeField] SlideAnimation appFooterAnimation = default;
-        [SerializeField] FadeAnimation backgroundBlockerAnimation = default;
+        [SerializeField] UIAnimation backHeaderAnimation = default;
+        [SerializeField] UIAnimation appHeaderAnimation = default;
+        [SerializeField] UIAnimation appFooterAnimation = default;
 
-        [Header("Other UI References")]
-        [SerializeField] GameObject loadingIndicator = default;
-        [SerializeField] Button backButton = default;
+        [Header("Back Button")]
+        [SerializeField] BackButton backButton = default;
 
-        AppMenu appMenu;
+        Stack<AppScreen> navigationHistory = new Stack<AppScreen>();
         AppScreen[] appScreens;
         AppScreen currentScreen;
         AppScreen previousScreen;
-        Image backButtonIcon;
-        Color baseBackButtonColor;
+        AppMenu appMenu;
         bool isTransitioningScreens;
 
         void Start()
         {
-            appMenu = GetComponentInChildren<AppMenu>(includeInactive: true);
-            appScreens = GetComponentsInChildren<AppScreen>(includeInactive: true);
+            appMenu = appCanvas.GetComponentInChildren<AppMenu>(includeInactive: true);
+            appScreens = appCanvas.GetComponentsInChildren<AppScreen>(includeInactive: true);
 
-            currentScreen = firstScreen;
+            currentScreen = splashScreen;
 
             appMenu?.SetUpAnimations();
             backHeaderAnimation?.SetUp();
             appHeaderAnimation?.SetUp();
             appFooterAnimation?.SetUp();
-            backgroundBlockerAnimation?.SetUp();
-
-            backButtonIcon = backButton.transform.GetChild(0).GetComponent<Image>();
-            baseBackButtonColor = (backButtonIcon) ? backButtonIcon.color : Color.white;
 
             foreach (AppScreen appScreen in appScreens)
             {
                 appScreen.SetUpAnimations();
-                if (appScreen != firstScreen)
+                if (appScreen != splashScreen)
                     appScreen.Deactivate();
             }
 
-            backButton.onClick.AddListener(ReturnToPreviousScreen);
-
-            firstScreen.Show();
-            HideLoadingIndicator();
+            splashScreen.Show();
+            navigationHistory.Push(splashScreen);
+                    
             CheckAppMenuAvailability();
-        }
-
-        protected override void OnAwake()
-        {
-            if (Instance == this)
-                DontDestroyOnLoad(transform.parent.gameObject);
-            else
-                Destroy(gameObject);
         }
 
         void CheckAppMenuAvailability(Sequence hideSequence = null)
@@ -134,6 +120,7 @@ namespace GreenNacho.UI
                 return;
 
             isTransitioningScreens = true;
+            navigationHistory.Push(nextScreen);
 
             Sequence hideSequence = currentScreen.Hide();
             previousScreen = currentScreen;
@@ -154,16 +141,6 @@ namespace GreenNacho.UI
             CheckAppFooterAvailability(showSequence, hideSequence);
         }
 
-        AppScreen FindAppScreen(string screenName)
-        {
-            AppScreen appScreen = Array.Find(appScreens, appScr => appScr.gameObject.name == screenName);
-            
-            if (!appScreen)
-                Debug.LogWarningFormat("There are no app screens named '{0}' in the scene.", screenName);
-
-            return appScreen;
-        }
-
         public void MoveToScreen(AppScreen nextScreen)
         {
             MoveToScreen(nextScreen, resetCurrentOnTransitionEnd: false);
@@ -176,53 +153,24 @@ namespace GreenNacho.UI
 
         public void MoveToFirstScreen()
         {
-            MoveToScreen(firstScreen, resetCurrentOnTransitionEnd: true);
+            MoveToScreen(splashScreen, resetCurrentOnTransitionEnd: true);
         }
 
         public void ReturnToPreviousScreen()
         {
-            if (isTransitioningScreens || !previousScreen || (appMenu && appMenu.BeganValidDrag))
-                return;
-
-            if (previousScreen != firstScreen)
-            {
-                isTransitioningScreens = true;
-
-                ChangeBackButtonColor(baseBackButtonColor);
-
-                Sequence hideSequence = currentScreen.HideReversed();
-                currentScreen = previousScreen;
-
-                Sequence showSequence = previousScreen.Show();
-                previousScreen = currentScreen.PreviousScreen;
-
-                showSequence.OnComplete(() => { isTransitioningScreens = false; });
-
-                CheckAppMenuAvailability(hideSequence);
-                CheckBackHeaderAvailability(showSequence, hideSequence);
-                CheckAppHeaderAvailability(showSequence, hideSequence);
-                CheckAppFooterAvailability(showSequence, hideSequence);
-            }
-            else
-                ReturnToPreviousScreenOfCurrent();
-        }
-
-        public void ReturnToPreviousScreenOfCurrent()
-        {
-            if (isTransitioningScreens || !currentScreen.PreviousScreen || (appMenu && appMenu.BeganValidDrag))
+            if (isTransitioningScreens || !previousScreen || (appMenu && appMenu.BeganValidDrag) || previousScreen == splashScreen)
                 return;
 
             isTransitioningScreens = true;
 
-            ChangeBackButtonColor(baseBackButtonColor);
-
-            currentScreen.PreviousScreen.SetSlideAnimationsToEndPosition();
+            backButton.ResetColor();
+            navigationHistory.Pop();
 
             Sequence hideSequence = currentScreen.HideReversed();
-            Sequence showSequence = currentScreen.PreviousScreen.Show();
+            currentScreen = previousScreen;
 
-            currentScreen = currentScreen.PreviousScreen;
-            previousScreen = currentScreen.PreviousScreen;
+            Sequence showSequence = previousScreen.Show();
+            previousScreen = navigationHistory.Peek();
 
             showSequence.OnComplete(() => { isTransitioningScreens = false; });
 
@@ -242,7 +190,7 @@ namespace GreenNacho.UI
             appMenu?.Deactivate();
         }
 
-        public void ShowAppComponent(SlideAnimation animation, Sequence hideSequence)
+        public void ShowAppComponent(UIAnimation animation, Sequence hideSequence)
         {
             if (animation)
             {
@@ -251,7 +199,7 @@ namespace GreenNacho.UI
             }
         }
 
-        public void HideAppComponent(SlideAnimation animation, Sequence hideSequence)
+        public void HideAppComponent(UIAnimation animation, Sequence hideSequence)
         {
             if (animation)
             {
@@ -260,48 +208,9 @@ namespace GreenNacho.UI
             }
         }
 
-        public void ShowLoadingIndicator()
+        public void ChangeBackButtonColor(Color overrideColor)
         {
-            backgroundBlockerAnimation?.Show();
-            loadingIndicator.gameObject.SetActive(true);
-        }
-
-        public void HideLoadingIndicator()
-        {
-            Tween hideTween = backgroundBlockerAnimation?.Hide();
-            hideTween?.OnComplete(() => loadingIndicator.gameObject.SetActive(false));
-        }
-
-        public void MoveToScreen(string screenName)
-        {
-            AppScreen appScreen = FindAppScreen(screenName);
-
-            if (appScreen)
-                AppNavigator.Instance.MoveToScreen(appScreen);
-        }
-
-        public void ChangeBackButtonColor(Color color)
-        {
-            if (backButtonIcon)
-                backButtonIcon.color = color;
-        }
-
-        public void RestoreBaseBackButtonColor()
-        {
-            if (backButtonIcon)
-                backButtonIcon.color = baseBackButtonColor;
-        }
-
-        public void ShowBackgroundBlocker()
-        {
-            backgroundBlockerAnimation.Activate();
-            backgroundBlockerAnimation.Show();
-        }
-
-        public void HideBackgroundBlocker()
-        {
-            Tween hideTween = backgroundBlockerAnimation.Hide();
-            hideTween.OnComplete(backgroundBlockerAnimation.Deactivate);
+            backButton.ChangeColor(overrideColor);
         }
     }
 }

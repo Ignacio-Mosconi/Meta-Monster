@@ -23,12 +23,12 @@ namespace GreenNacho.Common
             }
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
-            OnAwake();
+            SetUpSingleton();
         }
 
-        protected virtual void OnAwake()
+        protected virtual void SetUpSingleton()
         {
             if (Instance != this)
                 Destroy(gameObject);

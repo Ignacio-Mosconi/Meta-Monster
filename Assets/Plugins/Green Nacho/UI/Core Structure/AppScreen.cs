@@ -11,8 +11,6 @@ namespace GreenNacho.UI
     public class AppScreen : MonoBehaviour
     {
         [Header("App Screen Basic Properties")]
-        [SerializeField] protected AppScreen previousScreen = default;
-        [SerializeField] protected AppScreen nextScreen = default;
         [SerializeField] protected bool isAppMenuAvailable = true;
         [SerializeField] protected bool isBackHeaderAvailable = true;
         [SerializeField] protected bool isAppHeaderAvailable = true;
@@ -113,11 +111,6 @@ namespace GreenNacho.UI
         }
 
         #region Properties
-
-        public AppScreen PreviousScreen
-        {
-            get { return previousScreen; }
-        }
 
         public bool IsAppMenuAvailable
         {

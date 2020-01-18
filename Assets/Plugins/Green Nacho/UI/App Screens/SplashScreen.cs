@@ -3,18 +3,14 @@ using TMPro;
 
 namespace GreenNacho.UI
 {
-    public abstract class SplashScreen : AppScreen
+    public class SplashScreen : AppScreen
     {
-        [Header("Following Screens")]
-        [SerializeField] protected AppScreen logInSuccessScreen = default;
-        [SerializeField] protected AppScreen logInFailedScreen = default;
-
         [Header("App Version")]
         [SerializeField] TMP_Text appVersionText = default;
 
-        void Start()
+        protected virtual void Start()
         {
-            appVersionText.text = "App Version: " + Application.version; 
+            appVersionText.text = "App Version: " + Application.version;
         }
     } 
 }
