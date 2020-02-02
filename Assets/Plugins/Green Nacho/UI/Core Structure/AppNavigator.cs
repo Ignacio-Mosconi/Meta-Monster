@@ -167,10 +167,13 @@ namespace GreenNacho.UI
             navigationHistory.Pop();
 
             Sequence hideSequence = currentScreen.HideReversed();
-            currentScreen = previousScreen;
+            Sequence showSequence = previousScreen.Show(); 
 
-            Sequence showSequence = previousScreen.Show();
+            navigationHistory.Pop();
+            currentScreen = navigationHistory.Peek();
+            navigationHistory.Pop();
             previousScreen = navigationHistory.Peek();
+            navigationHistory.Push(currentScreen);
 
             showSequence.OnComplete(() => { isTransitioningScreens = false; });
 

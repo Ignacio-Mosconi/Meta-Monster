@@ -10,7 +10,10 @@ namespace MetaMonster
     [RequireComponent(typeof(EventTrigger), typeof(LayoutElement), typeof(UIAnimation))]
     public class ToolButton : MonoBehaviour
     {
-        public BinIcon BinIcon { get; set; }
+        [SerializeField] Image toolIcon = default;
+
+        public static ToolBin ToolBin { get; set; }
+        
         public Action OnButtonClick { get; set; }
 
         RectTransform rectTransform;
@@ -82,14 +85,13 @@ namespace MetaMonster
 
         bool IsOverBin()
         {
-            // RectTransform trashIconRectTransform = BinIcon.RectTransform;
-            // float buttonRadius = Mathf.Max(rectTransform.rect.width, rectTransform.rect.height);
-            // float trashIconRadius = Mathf.Max(trashIconRectTransform.rect.width, trashIconRectTransform.rect.height);
-            // float sqrDistance = (trashIconRectTransform.position - rectTransform.position).sqrMagnitude;
-            // float minDistance = (buttonRadius + trashIconRadius) * 0.5f;
+            RectTransform trashIconRectTransform = ToolBin.RectTransform;
+            float buttonRadius = Mathf.Max(rectTransform.rect.width, rectTransform.rect.height);
+            float trashIconRadius = Mathf.Max(trashIconRectTransform.rect.width, trashIconRectTransform.rect.height);
+            float sqrDistance = (trashIconRectTransform.position - rectTransform.position).sqrMagnitude;
+            float minDistance = (buttonRadius + trashIconRadius) * 0.5f;
 
-            // return (sqrDistance <= minDistance * minDistance);
-            return false;
+            return (sqrDistance <= minDistance * minDistance);
         }
 
         public void OnBeginDrag()
@@ -98,7 +100,7 @@ namespace MetaMonster
             transform.SetParent(canvasContainer);
 
             CreatePlaceholder();
-            //BinIcon.gameObject.SetActive(true);
+            ToolBin.gameObject.SetActive(true);
         }
 
         public void OnDrag(BaseEventData baseEventData)
@@ -110,10 +112,10 @@ namespace MetaMonster
                 transform.position = pointerEventData.position;
                 UpdatePlaceholderPosition();
 
-                // if (IsOverBin())
-                //     BinIcon.Open();
-                // else
-                //     BinIcon.Close();
+                if (IsOverBin())
+                    ToolBin.Open();
+                else
+                    ToolBin.Close();
             }
         }
 
@@ -132,7 +134,7 @@ namespace MetaMonster
                 transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
             }
 
-            //BinIcon.gameObject.SetActive(false);
+            ToolBin.gameObject.SetActive(false);
             Destroy(placeholder);
         }
 
@@ -142,6 +144,11 @@ namespace MetaMonster
                 return;
 
             OnButtonClick?.Invoke();
+        }
+
+        public void ChangeIconSprite(Sprite sprite)
+        {
+            toolIcon.sprite = sprite;
         }
     }
 }

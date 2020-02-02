@@ -5,8 +5,9 @@ using UnityEngine.UI;
 namespace MetaMonster
 {
     [RequireComponent(typeof(Image))]
-    public class BinIcon : MonoBehaviour
+    public class ToolBin : MonoBehaviour
     {
+        [Header("Bin's Sprites")]
         [SerializeField] Sprite[] sprites = new Sprite[2];
 
         public RectTransform RectTransform { get { return rectTransform; } }
