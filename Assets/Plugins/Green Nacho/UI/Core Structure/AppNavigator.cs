@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -49,7 +50,7 @@ namespace GreenNacho.UI
             }
 
             splashScreen.Show();
-            navigationHistory.Push(splashScreen);
+            navigationHistory.Push(currentScreen);
                     
             CheckAppMenuAvailability();
         }
@@ -120,20 +121,23 @@ namespace GreenNacho.UI
                 return;
 
             isTransitioningScreens = true;
+            
             navigationHistory.Push(nextScreen);
 
             Sequence hideSequence = currentScreen.Hide();
-            previousScreen = currentScreen;
-
             Sequence showSequence = nextScreen.Show();
+
+            previousScreen = currentScreen;
             currentScreen = nextScreen;
-            
-            showSequence.OnComplete(() => 
-            { 
+
+            Action<bool> onCompleteAction = (resetScreen) =>
+            {
                 isTransitioningScreens = false;
-                if (resetCurrentOnTransitionEnd)
+                if (resetScreen)
                     previousScreen.ResetAnimations();
-            });
+            };
+
+            showSequence.OnComplete(() => onCompleteAction(resetCurrentOnTransitionEnd));
 
             CheckAppMenuAvailability(hideSequence);
             CheckBackHeaderAvailability(showSequence, hideSequence);
@@ -164,7 +168,6 @@ namespace GreenNacho.UI
             isTransitioningScreens = true;
 
             backButton.ResetColor();
-            navigationHistory.Pop();
 
             Sequence hideSequence = currentScreen.HideReversed();
             Sequence showSequence = previousScreen.Show(); 

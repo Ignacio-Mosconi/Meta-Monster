@@ -12,6 +12,8 @@ namespace MetaMonster
     {
         [SerializeField] Image toolIcon = default;
 
+        public static RectTransform Container { get; set; }
+        public static RectTransform ScreenTransform { get; set; }
         public static ToolBin ToolBin { get; set; }
         
         public Action OnButtonClick { get; set; }
@@ -19,8 +21,7 @@ namespace MetaMonster
         RectTransform rectTransform;
         LayoutElement layoutElement;
         UIAnimation uiAnimation;
-        RectTransform container;
-        Transform canvasContainer;
+
         GameObject placeholder;
         bool isDragging = false;
 
@@ -29,8 +30,6 @@ namespace MetaMonster
             rectTransform = GetComponent<RectTransform>();
             layoutElement = GetComponent<LayoutElement>();
             uiAnimation = GetComponent<UIAnimation>();
-            container = transform.parent.GetComponent<RectTransform>();
-            canvasContainer = GetComponentInParent<Canvas>().transform;
 
             uiAnimation.SetUp();
         }
@@ -54,8 +53,8 @@ namespace MetaMonster
         {
             placeholder = new GameObject("Placeholder");
             
-            placeholder.transform.SetParent(container);
-            placeholder.transform.SetSiblingIndex(container.childCount);
+            placeholder.transform.SetParent(Container);
+            placeholder.transform.SetSiblingIndex(Container.childCount);
 
             LayoutElement placeholderLayoutElement = placeholder.AddComponent<LayoutElement>();
 
@@ -67,11 +66,11 @@ namespace MetaMonster
 
         void UpdatePlaceholderPosition()
         {
-            Rect containerRect = GetWorldRect(container);
-            int newPlaceholderIndex = container.childCount;
+            Rect containerRect = GetWorldRect(Container);
+            int newPlaceholderIndex = Container.childCount;
 
             if (containerRect.Contains(transform.position))
-                foreach (Transform child in container)
+                foreach (Transform child in Container)
                     if (transform.position.x < child.transform.position.x)
                     {
                         newPlaceholderIndex = child.GetSiblingIndex();
@@ -97,7 +96,7 @@ namespace MetaMonster
         public void OnBeginDrag()
         {
             isDragging = true;
-            transform.SetParent(canvasContainer);
+            transform.SetParent(ScreenTransform);
 
             CreatePlaceholder();
             ToolBin.gameObject.SetActive(true);
@@ -130,7 +129,7 @@ namespace MetaMonster
             }
             else
             {
-                transform.SetParent(container);
+                transform.SetParent(Container);
                 transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
             }
 
