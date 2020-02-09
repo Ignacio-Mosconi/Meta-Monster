@@ -9,6 +9,9 @@ namespace MetaMonster
         [Header("Prefabs")]
         [SerializeField] GameObject toolButtonPrefab = default;
 
+        [Header("Tool Icon Sprites")]
+        [SerializeField] ButtonSpriteSet[] toolIconSpriteSets = new ButtonSpriteSet[(int)ToolType.Count];
+
         [Header("Screen References")]
         [SerializeField] AppScreen[] toolConfigurationScreens = new AppScreen[(int)ToolType.Count];
 
@@ -17,12 +20,17 @@ namespace MetaMonster
         [SerializeField] ToolBin toolsBin = default;
         [SerializeField] OptionsPrompt toolsConfigurationPrompt = default; 
 
-        // [Header("Tools' Controllers")]
-        // [SerializeField] DieController dieController = default;
+        [Header("Tools' Controllers")]
+        [SerializeField] DieController dieController = default;
+
+        [Header("Various Tools' Properties")]
+        [SerializeField] string[] baseToolNames = new string[(int)ToolType.Count];
 
         void OnValidate()
         {
             Array.Resize(ref toolConfigurationScreens, (int)ToolType.Count);
+            Array.Resize(ref toolIconSpriteSets, (int)ToolType.Count);
+            Array.Resize(ref baseToolNames, (int)ToolType.Count);
         }
 
         void Start()
@@ -35,12 +43,13 @@ namespace MetaMonster
             toolsConfigurationPrompt.SetUp();
         }
 
-        void CreateToolButton(Action onClickAction)
+        void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName)
         {
             GameObject toolButtonObject = Instantiate(toolButtonPrefab, toolsContainer);
             ToolButton toolButton = toolButtonObject.GetComponent<ToolButton>();
             
             toolButton.OnButtonClick += onClickAction;
+            toolButton.SetUpTool(buttonSpriteSet, toolName);
         }
 
         public void DisplayToolConfigurationPrompt()
@@ -50,7 +59,8 @@ namespace MetaMonster
 
         public void AddDie(int faceCount)
         {
-            CreateToolButton(null);
+            string toolName = String.Format(baseToolNames[(int)ToolType.Die], faceCount.ToString());
+            CreateToolButton(() => dieController.MakeDieRoll(faceCount), toolIconSpriteSets[(int)ToolType.Die], toolName);
         }
 
         public void MoveToConfigurationScreen(int toolTypeIndex)

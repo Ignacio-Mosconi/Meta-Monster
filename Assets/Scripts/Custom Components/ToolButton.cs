@@ -2,15 +2,25 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 using DG.Tweening;
 using GreenNacho.UI;
 
 namespace MetaMonster
 {
+    [Serializable]
+    public struct ButtonSpriteSet
+    {
+        public Sprite normal;
+        public Sprite pressed;
+    }
+
     [RequireComponent(typeof(EventTrigger), typeof(LayoutElement), typeof(UIAnimation))]
     public class ToolButton : MonoBehaviour
     {
+        [Header("UI References")]
         [SerializeField] Image toolIcon = default;
+        [SerializeField] TMP_Text toolNameText = default;
 
         public static RectTransform Container { get; set; }
         public static RectTransform ScreenTransform { get; set; }
@@ -21,6 +31,7 @@ namespace MetaMonster
         RectTransform rectTransform;
         LayoutElement layoutElement;
         UIAnimation uiAnimation;
+        ButtonSpriteSet buttonSpriteSet;
 
         GameObject placeholder;
         bool isDragging = false;
@@ -96,8 +107,9 @@ namespace MetaMonster
         public void OnBeginDrag()
         {
             isDragging = true;
+            toolIcon.sprite = buttonSpriteSet.pressed;
+            
             transform.SetParent(ScreenTransform);
-
             CreatePlaceholder();
             ToolBin.gameObject.SetActive(true);
         }
@@ -121,6 +133,7 @@ namespace MetaMonster
         public void OnEndDrag()
         {
             isDragging = false;
+            toolIcon.sprite = buttonSpriteSet.normal;
 
             if (IsOverBin())
             {
@@ -145,9 +158,11 @@ namespace MetaMonster
             OnButtonClick?.Invoke();
         }
 
-        public void ChangeIconSprite(Sprite sprite)
+        public void SetUpTool(ButtonSpriteSet buttonSpriteSet, string name)
         {
-            toolIcon.sprite = sprite;
+            this.buttonSpriteSet = buttonSpriteSet;
+            toolIcon.sprite = buttonSpriteSet.normal;
+            toolNameText.text = name;
         }
     }
 }
