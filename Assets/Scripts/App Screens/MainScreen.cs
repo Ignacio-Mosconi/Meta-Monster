@@ -63,6 +63,14 @@ namespace MetaMonster
             CreateToolButton(() => dieController.MakeDieRoll(faceCount), toolIconSpriteSets[(int)ToolType.Die], toolName);
         }
 
+        public void AddTimer(TimeSpan timeSpan)
+        {
+            string timeSet = timeSpan.Minutes.ToString() + "' " + timeSpan.Seconds.ToString() + "\"";
+            string toolName = String.Format(baseToolNames[(int)ToolType.Timer], timeSet);
+            
+            //CreateToolButton(() => dieController.MakeDieRoll(faceCount), toolIconSpriteSets[(int)ToolType.Timer], toolName);
+        }
+
         public void MoveToConfigurationScreen(int toolTypeIndex)
         {
             toolsConfigurationPrompt.Dismiss();

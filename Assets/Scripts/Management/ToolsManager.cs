@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using GreenNacho.Common;
 
 namespace MetaMonster
@@ -7,7 +8,7 @@ namespace MetaMonster
     {
         Die,
         Roulette,
-        Stopwatch,
+        Timer,
         Count
     }
 
@@ -19,6 +20,11 @@ namespace MetaMonster
         public void AddDie(int faceCount)
         {
             mainScreen.AddDie(faceCount);
+        }
+
+        public void AddTimer(TimeSpan timeSpan)
+        {
+            mainScreen.AddTimer(timeSpan);
         }
     }
 }
