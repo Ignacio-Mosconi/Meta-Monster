@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Timer Controller
+  m_Controller: {fileID: 9100000, guid: 2224d39131ed55446b27300fc63cd6ba, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: ce38e35a6f2f02b449a1479cb4c45520, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c53590b9add2b0e4b8579ee1d54a94e8, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 26233c5aab3385943a8eddf58b5d136e, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 26233c5aab3385943a8eddf58b5d136e, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: e134b2d291e29434b97010a169ed811e, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e134b2d291e29434b97010a169ed811e, type: 2}

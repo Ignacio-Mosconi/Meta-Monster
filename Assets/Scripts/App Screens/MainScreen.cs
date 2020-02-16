@@ -22,6 +22,7 @@ namespace MetaMonster
 
         [Header("Tools' Controllers")]
         [SerializeField] DieController dieController = default;
+        [SerializeField] TimerController timerController = default;
 
         [Header("Various Tools' Properties")]
         [SerializeField] string[] baseToolNames = new string[(int)ToolType.Count];
@@ -65,10 +66,10 @@ namespace MetaMonster
 
         public void AddTimer(TimeSpan timeSpan)
         {
-            string timeSet = timeSpan.Minutes.ToString() + "' " + timeSpan.Seconds.ToString() + "\"";
+            string timeSet = timeSpan.Minutes.ToString("00") + "' " + timeSpan.Seconds.ToString("00") + "\"";
             string toolName = String.Format(baseToolNames[(int)ToolType.Timer], timeSet);
             
-            //CreateToolButton(() => dieController.MakeDieRoll(faceCount), toolIconSpriteSets[(int)ToolType.Timer], toolName);
+            CreateToolButton(() => timerController.StartTimer(timeSpan), toolIconSpriteSets[(int)ToolType.Timer], toolName);
         }
 
         public void MoveToConfigurationScreen(int toolTypeIndex)
