@@ -32,20 +32,18 @@ namespace MetaMonster
 
         public override void DismissTool()
         {
-            if (isRolling)
-                return;
-
-            HideTool();
+            if (!isRolling)
+                HideTool();
         }
 
-        public void MakeDieRoll(int faceCount)
+        public void MakeDieRoll(int faceCount, uint toolID)
         {
-            if (ToolController.IsToolRunning)
+            if (IsToolRunning)
                 return;
             
             isRolling = true;
 
-            ShowTool();
+            ShowTool(toolID);
             StartCoroutine(RollDie(faceCount));
         }
     }

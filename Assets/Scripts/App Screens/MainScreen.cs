@@ -44,13 +44,13 @@ namespace MetaMonster
             toolsConfigurationPrompt.SetUp();
         }
 
-        void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName)
+        void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName, uint toolID)
         {
             GameObject toolButtonObject = Instantiate(toolButtonPrefab, toolsContainer);
             ToolButton toolButton = toolButtonObject.GetComponent<ToolButton>();
-            
-            toolButton.OnButtonClick += onClickAction;
-            toolButton.SetUpTool(buttonSpriteSet, toolName);
+        
+            toolButton.OnButtonClick += onClickAction;   
+            toolButton.SetUpTool(buttonSpriteSet, toolName, toolID);
         }
 
         public void DisplayToolConfigurationPrompt()
@@ -58,18 +58,19 @@ namespace MetaMonster
             toolsConfigurationPrompt.Display();
         }
 
-        public void AddDie(int faceCount)
+        public void AddDie(int faceCount, uint toolID)
         {
             string toolName = String.Format(baseToolNames[(int)ToolType.Die], faceCount.ToString());
-            CreateToolButton(() => dieController.MakeDieRoll(faceCount), toolIconSpriteSets[(int)ToolType.Die], toolName);
+            
+            CreateToolButton(() => dieController.MakeDieRoll(faceCount, toolID), toolIconSpriteSets[(int)ToolType.Die], toolName, toolID);
         }
 
-        public void AddTimer(TimeSpan timeSpan)
+        public void AddTimer(TimeSpan timeSpan, uint toolID)
         {
             string timeSet = timeSpan.Minutes.ToString("00") + "' " + timeSpan.Seconds.ToString("00") + "\"";
             string toolName = String.Format(baseToolNames[(int)ToolType.Timer], timeSet);
             
-            CreateToolButton(() => timerController.StartTimer(timeSpan), toolIconSpriteSets[(int)ToolType.Timer], toolName);
+            CreateToolButton(() => timerController.StartTimer(timeSpan, toolID), toolIconSpriteSets[(int)ToolType.Timer], toolName, toolID);
         }
 
         public void MoveToConfigurationScreen(int toolTypeIndex)

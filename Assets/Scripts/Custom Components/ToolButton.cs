@@ -32,8 +32,8 @@ namespace MetaMonster
         LayoutElement layoutElement;
         UIAnimation uiAnimation;
         ButtonSpriteSet buttonSpriteSet;
-
         GameObject placeholder;
+        uint toolID;
         bool isDragging = false;
 
         void Awake()
@@ -111,7 +111,7 @@ namespace MetaMonster
             
             transform.SetParent(ScreenTransform);
             CreatePlaceholder();
-            ToolBin.gameObject.SetActive(true);
+            ToolBin.gameObject.SetActive(!ToolsManager.Instance.IsToolRunning(toolID));
         }
 
         public void OnDrag(BaseEventData baseEventData)
@@ -152,15 +152,14 @@ namespace MetaMonster
 
         public void OnPointerClick()
         {
-            if (isDragging)
-                return;
-
-            OnButtonClick?.Invoke();
+            if (!isDragging)
+                OnButtonClick?.Invoke();
         }
 
-        public void SetUpTool(ButtonSpriteSet buttonSpriteSet, string name)
+        public void SetUpTool(ButtonSpriteSet buttonSpriteSet, string name, uint toolID)
         {
             this.buttonSpriteSet = buttonSpriteSet;
+            this.toolID = toolID;
             toolIcon.sprite = buttonSpriteSet.normal;
             toolNameText.text = name;
         }

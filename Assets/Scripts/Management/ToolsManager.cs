@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using GreenNacho.Common;
 
@@ -17,14 +18,34 @@ namespace MetaMonster
         [Header("Screen References")]
         [SerializeField] MainScreen mainScreen = default;
 
+        List<uint> runningToolIDs = new List<uint>();
+        uint lastAssignedID = 0;
+
+        public bool IsToolRunning(uint toolID)
+        {
+            return runningToolIDs.Contains(toolID);
+        }
+
+        public void AddRunningTool(uint toolID)
+        {
+            runningToolIDs.Add(toolID);
+        }
+
+        public void RemoveRunningTool(uint toolID)
+        {
+            runningToolIDs.Remove(toolID);
+        }
+
         public void AddDie(int faceCount)
         {
-            mainScreen.AddDie(faceCount);
+            lastAssignedID++;
+            mainScreen.AddDie(faceCount, lastAssignedID);
         }
 
         public void AddTimer(TimeSpan timeSpan)
         {
-            mainScreen.AddTimer(timeSpan);
+            lastAssignedID++;
+            mainScreen.AddTimer(timeSpan, lastAssignedID);
         }
     }
 }

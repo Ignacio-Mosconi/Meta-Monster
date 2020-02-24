@@ -56,11 +56,6 @@ namespace MetaMonster
             timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
         }
 
-        public override void DismissTool()
-        {
-            HideTool();
-        }
-
         public void SwapPauseState()
         {
             enabled = !enabled;
@@ -77,16 +72,16 @@ namespace MetaMonster
             }
         }
 
-        public void StartTimer(TimeSpan timeSpan)
+        public void StartTimer(TimeSpan timeSpan, uint toolID)
         {
-            if (ToolController.IsToolRunning)
+            if (IsToolRunning)
                 return;
 
             timer = (float)timeSpan.TotalSeconds;
             enabled = true;
 
             UpdateTimerText();
-            ShowTool();
+            ShowTool(toolID);
             StartCoroutine(EnableTimerDelayed());
         }
     }

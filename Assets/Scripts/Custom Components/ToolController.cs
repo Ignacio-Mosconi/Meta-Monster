@@ -8,14 +8,14 @@ namespace MetaMonster
         [Header("Basic UI References")]
         [SerializeField] Animator toolAnimator = default;
         
-        public static bool IsToolRunning { get; private set; } = false;
+        public bool IsToolRunning { get; private set; } = false;
         
         protected float showToolDuration;
         protected float hideToolDuration;
+        uint runningToolID;
         bool isShowing = false;
         bool isHiding = false;
         
-
         void Awake()
         {
             AnimationClip showAnimation = Array.Find(toolAnimator.runtimeAnimatorController.animationClips, 
@@ -43,10 +43,13 @@ namespace MetaMonster
             toolAnimator.gameObject.SetActive(false);
         }
 
-        protected void ShowTool()
+        protected void ShowTool(uint toolID)
         {
             if (isShowing || isHiding)
                 return;
+
+            runningToolID = toolID;
+            ToolsManager.Instance.AddRunningTool(runningToolID);
             
             IsToolRunning = true;
             isShowing = true;
@@ -60,12 +63,18 @@ namespace MetaMonster
             if (isShowing || isHiding)
                 return;
 
+            ToolsManager.Instance.RemoveRunningTool(runningToolID);
+            runningToolID = 0;
+
             IsToolRunning = false;
             isHiding = true;
             toolAnimator.SetTrigger("Hide");
             Invoke("OnFinishHiding", hideToolDuration);
         }
 
-        public abstract void DismissTool();
+        public virtual void DismissTool()
+        {
+            HideTool();
+        }
     }
 }
