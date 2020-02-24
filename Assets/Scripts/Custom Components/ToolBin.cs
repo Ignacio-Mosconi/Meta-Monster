@@ -7,13 +7,15 @@ namespace MetaMonster
     [RequireComponent(typeof(Image))]
     public class ToolBin : MonoBehaviour
     {
-        [Header("Bin's Sprites")]
+        [Header("Bin Properties")]
+        [SerializeField] Image binImage = default;
         [SerializeField] Sprite[] sprites = new Sprite[2];
 
         public RectTransform RectTransform { get { return rectTransform; } }
 
-        Image image;
         RectTransform rectTransform;
+        float scaleFactor;
+        bool isOpen = false;
 
         void OnValidate()
         {
@@ -22,18 +24,29 @@ namespace MetaMonster
 
         void Awake()
         {
-            image = GetComponent<Image>();
             rectTransform = GetComponent<RectTransform>();
+            scaleFactor = Mathf.Max(sprites[1].rect.size.x / sprites[0].rect.size.y, 
+                                    sprites[1].rect.size.y / sprites[0].rect.size.y);
         }
 
         public void Open()
         {
-            image.sprite = sprites[1];
+            if (isOpen)
+                return;
+
+            isOpen = true;
+            binImage.transform.localScale = Vector3.one * scaleFactor;
+            binImage.sprite = sprites[1];
         }
 
         public void Close()
         {
-            image.sprite = sprites[0];
+            if (!isOpen)
+                return;
+
+            isOpen = false;
+            binImage.transform.localScale = Vector3.one;
+            binImage.sprite = sprites[0];
         }
     }
 }

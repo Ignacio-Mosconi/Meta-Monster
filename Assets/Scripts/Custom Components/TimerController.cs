@@ -78,6 +78,8 @@ namespace MetaMonster
                 return;
 
             timer = (float)timeSpan.TotalSeconds;
+            pauseStateIcon.sprite = pauseStateSprites[0];
+            pauseStateIcon.color = pauseStateColors[0];
             enabled = true;
 
             UpdateTimerText();

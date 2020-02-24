@@ -34,7 +34,6 @@ namespace MetaMonster
         ButtonSpriteSet buttonSpriteSet;
         GameObject placeholder;
         uint toolID;
-        bool isDragging = false;
 
         void Awake()
         {
@@ -106,7 +105,6 @@ namespace MetaMonster
 
         public void OnBeginDrag()
         {
-            isDragging = true;
             toolIcon.sprite = buttonSpriteSet.pressed;
             
             transform.SetParent(ScreenTransform);
@@ -132,7 +130,6 @@ namespace MetaMonster
 
         public void OnEndDrag()
         {
-            isDragging = false;
             toolIcon.sprite = buttonSpriteSet.normal;
 
             if (IsOverBin())
@@ -152,7 +149,7 @@ namespace MetaMonster
 
         public void OnPointerClick()
         {
-            if (!isDragging)
+            if (transform.parent == Container)
                 OnButtonClick?.Invoke();
         }
 
