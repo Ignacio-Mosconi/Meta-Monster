@@ -890,7 +890,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1476629024357125964}
-        m_MethodName: AddDieConfiguration
+        m_MethodName: AddToolConfiguration
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

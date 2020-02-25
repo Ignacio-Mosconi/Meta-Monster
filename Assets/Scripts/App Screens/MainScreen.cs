@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 using GreenNacho.UI;
 
 namespace MetaMonster
@@ -8,17 +9,24 @@ namespace MetaMonster
     {
         [Header("Prefabs")]
         [SerializeField] GameObject toolButtonPrefab = default;
+        [SerializeField] GameObject advancedToolButtonPrefab = default;
 
         [Header("Tool Icon Sprites")]
         [SerializeField] ButtonSpriteSet[] toolIconSpriteSets = new ButtonSpriteSet[(int)ToolType.Count];
 
         [Header("Screen References")]
-        [SerializeField] AppScreen[] toolConfigurationScreens = new AppScreen[(int)ToolType.Count];
+        [SerializeField] ToolConfigurationScreen[] toolConfigurationScreens = new ToolConfigurationScreen[(int)ToolType.Count];
 
-        [Header("UI References")]
-        [SerializeField] RectTransform toolsContainer = default;
-        [SerializeField] ToolBin toolsBin = default;
+        [Header("Basic UI References")]
+        [SerializeField] GameObject basicUI = default;
+        [SerializeField] Button[] addToolButtons = new Button[BasicUIModeTools];
+        [SerializeField] RectTransform[] toolContainers = new RectTransform[BasicUIModeTools];
         [SerializeField] OptionsPrompt toolsConfigurationPrompt = default; 
+
+        [Header("Advanced UI References")]
+        [SerializeField] GameObject advancedUI = default;
+        [SerializeField] RectTransform advancedToolsContainer = default;
+        [SerializeField] ToolBin toolsBin = default;
 
         [Header("Tools' Controllers")]
         [SerializeField] DieController dieController = default;
@@ -27,50 +35,99 @@ namespace MetaMonster
         [Header("Various Tools' Properties")]
         [SerializeField] string[] baseToolNames = new string[(int)ToolType.Count];
 
+        const int BasicUIModeTools = 4;
+
         void OnValidate()
         {
+            Array.Resize(ref addToolButtons, BasicUIModeTools);
+            Array.Resize(ref toolContainers, BasicUIModeTools);
             Array.Resize(ref toolConfigurationScreens, (int)ToolType.Count);
             Array.Resize(ref toolIconSpriteSets, (int)ToolType.Count);
             Array.Resize(ref baseToolNames, (int)ToolType.Count);
         }
 
+        void OnEnable()
+        {
+            advancedUI.SetActive(SettingsManager.Instance.InAdvancedMode);
+            basicUI.SetActive(!SettingsManager.Instance.InAdvancedMode);
+        }
+
         void Start()
         {
-            ToolButton.ToolBin = toolsBin;
-            ToolButton.Container = toolsContainer;
-            ToolButton.ScreenTransform = GetComponent<RectTransform>();
+            AdvancedToolButton.ToolBin = toolsBin;
+            AdvancedToolButton.Container = advancedToolsContainer;
+            AdvancedToolButton.ScreenTransform = GetComponent<RectTransform>();
             
             toolsBin.gameObject.SetActive(false);
-            toolsConfigurationPrompt.SetUp();
         }
 
-        void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName, uint toolID)
+        void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName, uint toolID, int buttonIndex = -1)
         {
-            GameObject toolButtonObject = Instantiate(toolButtonPrefab, toolsContainer);
-            ToolButton toolButton = toolButtonObject.GetComponent<ToolButton>();
-        
-            toolButton.OnButtonClick += onClickAction;   
-            toolButton.SetUpTool(buttonSpriteSet, toolName, toolID);
+            GameObject prefab = null;
+            Transform container = null;
+            
+            if (SettingsManager.Instance.InAdvancedMode)
+            {
+                prefab = advancedToolButtonPrefab;
+                container = advancedToolsContainer;
+            }
+            else
+            {
+                prefab = toolButtonPrefab;
+
+                if (buttonIndex != -1)
+                {
+                    container = toolContainers[buttonIndex];
+                    addToolButtons[buttonIndex].gameObject.SetActive(false);
+                }
+            }
+
+            if (container != null)
+            {
+                GameObject toolButtonObject = Instantiate(prefab, container);
+                ToolButton toolButton = toolButtonObject.GetComponent<ToolButton>();
+
+                if (prefab == toolButtonPrefab)
+                    toolButton.OnDisposed.AddListener(() => addToolButtons[buttonIndex].gameObject.SetActive(true));
+            
+                toolButton.OnButtonClick += onClickAction;   
+                toolButton.SetUpTool(buttonSpriteSet, toolName, toolID);
+            }
         }
 
-        public void DisplayToolConfigurationPrompt()
+        public void DisplayToolConfigurationPrompt(int buttonIndex)
         {
+            ToolConfigurationScreen.ToolPositionIndex = buttonIndex;
             toolsConfigurationPrompt.Display();
         }
 
-        public void AddDie(int faceCount, uint toolID)
+        public void DismissToolConfigurationPrompt()
+        {
+            ToolConfigurationScreen.ToolPositionIndex = -1;
+            toolsConfigurationPrompt.Dismiss();
+        }
+
+        public void AddDie(int faceCount, int buttonIndex, uint toolID)
         {
             string toolName = String.Format(baseToolNames[(int)ToolType.Die], faceCount.ToString());
             
-            CreateToolButton(() => dieController.MakeDieRoll(faceCount, toolID), toolIconSpriteSets[(int)ToolType.Die], toolName, toolID);
+            CreateToolButton(() => dieController.MakeDieRoll(faceCount, toolID), 
+                                    toolIconSpriteSets[(int)ToolType.Die], 
+                                    toolName, 
+                                    toolID,
+                                    buttonIndex);
         }
 
-        public void AddTimer(TimeSpan timeSpan, uint toolID)
+        public void AddTimer(TimeSpan timeSpan, int buttonIndex, uint toolID)
         {
             string timeSet = timeSpan.Minutes.ToString("00") + "' " + timeSpan.Seconds.ToString("00") + "\"";
             string toolName = String.Format(baseToolNames[(int)ToolType.Timer], timeSet);
             
-            CreateToolButton(() => timerController.StartTimer(timeSpan, toolID), toolIconSpriteSets[(int)ToolType.Timer], toolName, toolID);
+            CreateToolButton(() => timerController.StartTimer(timeSpan, toolID), 
+                                    toolIconSpriteSets[(int)ToolType.Timer], 
+                                    toolName, 
+                                    toolID,
+                                    buttonIndex);
         }
 
         public void MoveToConfigurationScreen(int toolTypeIndex)

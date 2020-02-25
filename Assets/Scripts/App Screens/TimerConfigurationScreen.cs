@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using TMPro;
-using GreenNacho.UI;
 
 namespace MetaMonster
 {
@@ -12,7 +11,7 @@ namespace MetaMonster
         Count
     }
 
-    public class TimerConfigurationScreen : AppScreen
+    public class TimerConfigurationScreen : ToolConfigurationScreen
     {
         [Header("UI References")]
         [SerializeField] TMP_InputField[] timeFields = new TMP_InputField[(int)TimeComponent.Count];
@@ -36,20 +35,18 @@ namespace MetaMonster
             }
         }
 
+        protected override void OnAddToolConfiguration()
+        {
+            TimeSpan timeSpan = new TimeSpan(0, timeValuesEntered[(int)TimeComponent.Minutes], timeValuesEntered[(int)TimeComponent.Seconds]);
+            ToolsManager.Instance.AddTimer(timeSpan, ToolPositionIndex);
+        }
+
         void OnEndTimeFieldEdition(TimeComponent timeComponent, string str)
         {
             int number = Convert.ToInt32(str);
 
             timeValuesEntered[(int)timeComponent] = Mathf.Clamp(number, MinTimeValue, MaxTimeValue);
             timeFields[(int)timeComponent].text = timeValuesEntered[(int)timeComponent].ToString("00");
-        }
-
-        public void AddTimerConfiguration()
-        {
-            TimeSpan timeSpan = new TimeSpan(0, timeValuesEntered[(int)TimeComponent.Minutes], timeValuesEntered[(int)TimeComponent.Seconds]);
-
-            ToolsManager.Instance.AddTimer(timeSpan);
-            AppNavigator.Instance.ReturnToPreviousScreen();
         }
     }
 }

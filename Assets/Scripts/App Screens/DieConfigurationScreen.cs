@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using TMPro;
-using GreenNacho.UI;
 
 namespace MetaMonster
 {
-    public class DieConfigurationScreen : AppScreen
+    public class DieConfigurationScreen : ToolConfigurationScreen
     {
         [Header("UI References")]
         [SerializeField] GameObject increaseButton = default;
@@ -53,6 +52,11 @@ namespace MetaMonster
                     DecreaseFaceCount();
                 }
             }
+        }
+
+        protected override void OnAddToolConfiguration()
+        {
+            ToolsManager.Instance.AddDie(faceCount, ToolPositionIndex);
         }
 
         void IncreaseFaceCount()
@@ -117,12 +121,6 @@ namespace MetaMonster
 
             if (!isIncreasing)
                 enabled = false;
-        }
-
-        public void AddDieConfiguration()
-        {
-            ToolsManager.Instance.AddDie(faceCount);
-            AppNavigator.Instance.ReturnToPreviousScreen();
         }
     }
 }

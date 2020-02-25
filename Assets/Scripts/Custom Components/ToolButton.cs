@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
@@ -15,32 +16,27 @@ namespace MetaMonster
         public Sprite pressed;
     }
 
-    [RequireComponent(typeof(EventTrigger), typeof(LayoutElement), typeof(UIAnimation))]
+    [RequireComponent(typeof(EventTrigger), typeof(UIAnimation))]
     public class ToolButton : MonoBehaviour
     {
-        [Header("UI References")]
-        [SerializeField] Image toolIcon = default;
-        [SerializeField] TMP_Text toolNameText = default;
-
-        public static RectTransform Container { get; set; }
-        public static RectTransform ScreenTransform { get; set; }
-        public static ToolBin ToolBin { get; set; }
+        [Header("Basic UI References")]
+        [SerializeField] protected Image toolIcon = default;
+        [SerializeField] protected TMP_Text toolNameText = default;
         
         public Action OnButtonClick { get; set; }
+        public UnityEvent OnDisposed { get; private set; } = new UnityEvent();
 
-        RectTransform rectTransform;
-        LayoutElement layoutElement;
-        UIAnimation uiAnimation;
-        ButtonSpriteSet buttonSpriteSet;
-        GameObject placeholder;
-        uint toolID;
+        protected UIAnimation uiAnimation;
+        protected ButtonSpriteSet buttonSpriteSet;
+        protected uint toolID;
 
-        void Awake()
+        float touchStartTime = 0f;
+
+        const float DisposeTouchTime = 0.5f;
+
+        protected virtual void Awake()
         {
-            rectTransform = GetComponent<RectTransform>();
-            layoutElement = GetComponent<LayoutElement>();
             uiAnimation = GetComponent<UIAnimation>();
-
             uiAnimation.SetUp();
         }
 
@@ -49,108 +45,37 @@ namespace MetaMonster
             uiAnimation.Show();
         }
 
-        Rect GetWorldRect(RectTransform rectTransform)
+        public virtual void OnPointerClick()
         {
-            Vector3[] worldCorners = new Vector3[4];
-            Vector2 rectSize = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
+            if (Time.time < touchStartTime + DisposeTouchTime)
+                OnButtonClick?.Invoke();
 
-            rectTransform.GetWorldCorners(worldCorners);
-            
-            return (new Rect(worldCorners[0], rectSize));
+            touchStartTime = 0f;
+            toolIcon.sprite = buttonSpriteSet.normal;
         }
 
-        void CreatePlaceholder()
-        {
-            placeholder = new GameObject("Placeholder");
-            
-            placeholder.transform.SetParent(Container);
-            placeholder.transform.SetSiblingIndex(Container.childCount);
-
-            LayoutElement placeholderLayoutElement = placeholder.AddComponent<LayoutElement>();
-
-            placeholderLayoutElement.preferredWidth = layoutElement.preferredWidth;
-            placeholderLayoutElement.preferredHeight = layoutElement.preferredHeight;
-            placeholderLayoutElement.flexibleWidth = layoutElement.flexibleWidth;
-            placeholderLayoutElement.flexibleHeight = layoutElement.flexibleHeight;
-        }
-
-        void UpdatePlaceholderPosition()
-        {
-            Rect containerRect = GetWorldRect(Container);
-            int newPlaceholderIndex = Container.childCount;
-
-            if (containerRect.Contains(transform.position))
-                foreach (Transform child in Container)
-                    if (transform.position.x < child.transform.position.x)
-                    {
-                        newPlaceholderIndex = child.GetSiblingIndex();
-                        if (placeholder.transform.GetSiblingIndex() < newPlaceholderIndex)
-                            newPlaceholderIndex--;
-                        break;
-                    }
-
-            placeholder.transform.SetSiblingIndex(newPlaceholderIndex);
-        }
-
-        bool IsOverBin()
-        {
-            RectTransform trashIconRectTransform = ToolBin.RectTransform;
-            float buttonRadius = Mathf.Max(rectTransform.rect.width, rectTransform.rect.height);
-            float trashIconRadius = Mathf.Max(trashIconRectTransform.rect.width, trashIconRectTransform.rect.height);
-            float sqrDistance = (trashIconRectTransform.position - rectTransform.position).sqrMagnitude;
-            float minDistance = (buttonRadius + trashIconRadius) * 0.5f;
-
-            return (sqrDistance <= minDistance * minDistance);
-        }
-
-        public void OnBeginDrag()
+        public void OnPointerDown()
         {
             toolIcon.sprite = buttonSpriteSet.pressed;
-            
-            transform.SetParent(ScreenTransform);
-            CreatePlaceholder();
-            ToolBin.gameObject.SetActive(!ToolsManager.Instance.IsToolRunning(toolID));
+            touchStartTime = Time.time;
         }
 
-        public void OnDrag(BaseEventData baseEventData)
+        public void OnPointerUp()
         {
-            PointerEventData pointerEventData = baseEventData as PointerEventData;
-
-            if (pointerEventData.position != (Vector2)transform.position)
+            if (Time.time >= touchStartTime + DisposeTouchTime)
             {
-                transform.position = pointerEventData.position;
-                UpdatePlaceholderPosition();
+                toolIcon.sprite = buttonSpriteSet.normal;
 
-                if (IsOverBin())
-                    ToolBin.Open();
-                else
-                    ToolBin.Close();
+                if (!ToolsManager.Instance.IsToolRunning(toolID))
+                {
+                    Tween hideTween = uiAnimation.Hide();
+                    hideTween.OnComplete(() => 
+                    {
+                        Destroy(this);
+                        OnDisposed.Invoke();
+                    });
+                }
             }
-        }
-
-        public void OnEndDrag()
-        {
-            toolIcon.sprite = buttonSpriteSet.normal;
-
-            if (IsOverBin())
-            {
-                Tween hideTween = uiAnimation.Hide();
-                hideTween.OnComplete(() => Destroy(this));
-            }
-            else
-            {
-                transform.SetParent(Container);
-                transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
-            }
-
-            ToolBin.gameObject.SetActive(false);
-            Destroy(placeholder);
-        }
-
-        public void OnPointerClick()
-        {
-            if (transform.parent == Container)
-                OnButtonClick?.Invoke();
         }
 
         public void SetUpTool(ButtonSpriteSet buttonSpriteSet, string name, uint toolID)

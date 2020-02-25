@@ -4,27 +4,53 @@ using DG.Tweening;
 
 namespace MetaMonster
 {
-    [RequireComponent(typeof(PopAnimation))]
     public class OptionsPrompt : MonoBehaviour
     {
-        PopAnimation popAnimation;
+        [Header("UI References")]
+        [SerializeField] GameObject prompt = default;
+        [SerializeField] GameObject dismissPanel = default;
+        [SerializeField] UIAnimation[] uiAnimations = default;
 
-        public void SetUp()
+        void Start()
         {
-            popAnimation = GetComponent<PopAnimation>();            
-            popAnimation.SetUp();
+            uiAnimations = GetComponentsInChildren<UIAnimation>(includeInactive: true);
+            
+            for (int i = 0; i < uiAnimations.Length; i++)
+                uiAnimations[i].SetUp();
+
+            DisablePromptElements();
+        }
+
+        void EnablePromptElements()
+        {
+            prompt.SetActive(true);
+            dismissPanel.SetActive(true);
+        }
+        
+        void DisablePromptElements()
+        {
+            prompt.SetActive(false);
+            dismissPanel.SetActive(false);
         }
 
         public void Display()
         {
-            gameObject.SetActive(true);
-            popAnimation.Show();
+            EnablePromptElements();
+
+            Sequence showSequence = DOTween.Sequence();
+
+            for (int i = 0; i < uiAnimations.Length; i++)
+                showSequence.Insert(uiAnimations[i].ShowStartUpTime, uiAnimations[i].Show());
         }
 
         public void Dismiss()
         {
-            Tween hideTween = popAnimation.Hide();
-            hideTween.OnComplete(() => gameObject.SetActive(false));
+            Sequence hideSequence = DOTween.Sequence();
+
+            for (int i = 0; i < uiAnimations.Length; i++)
+                hideSequence.Insert(uiAnimations[i].HideStartUpTime, uiAnimations[i].Hide());
+
+            hideSequence.OnComplete(DisablePromptElements);
         }
     }
 }

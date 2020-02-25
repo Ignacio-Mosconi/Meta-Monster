@@ -36,16 +36,16 @@ namespace MetaMonster
             runningToolIDs.Remove(toolID);
         }
 
-        public void AddDie(int faceCount)
+        public void AddDie(int faceCount, int buttonIndex)
         {
             lastAssignedID++;
-            mainScreen.AddDie(faceCount, lastAssignedID);
+            mainScreen.AddDie(faceCount, buttonIndex, lastAssignedID);
         }
 
-        public void AddTimer(TimeSpan timeSpan)
+        public void AddTimer(TimeSpan timeSpan, int buttonIndex)
         {
             lastAssignedID++;
-            mainScreen.AddTimer(timeSpan, lastAssignedID);
+            mainScreen.AddTimer(timeSpan, buttonIndex, lastAssignedID);
         }
     }
 }
