@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.85}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 910}
-  m_SizeDelta: {x: 980, y: 273}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1251916957458815043
 MonoBehaviour:
@@ -132,8 +132,8 @@ MonoBehaviour:
   hideEase: 21
   isAppScreenAnimation: 1
   fitSlidingPositionsToResolution: 1
-  referenceSlideInOffscreenPosition: {x: 0, y: 384}
-  referenceSlideOutOffscreenPosition: {x: 0, y: 384}
+  referenceSlideInOffscreenPosition: {x: 0, y: 288}
+  referenceSlideOutOffscreenPosition: {x: 0, y: 288}
 --- !u!1 &1041640142778924774
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,6 +266,12 @@ MonoBehaviour:
   - Dado de {0} caras
   - Ruleta de {0} colores
   - Timer ({0})
+  uiModeAlertTitle: "\xA1Atenci\xF3n!"
+  uiModeAlertMessage: "\xBFQuer\xE9s activar el modo de uso avanzado?"
+  uiModeAlertOptions:
+  - "S\xED"
+  - No
+  - No volver a mostrar
 --- !u!1 &1526809308094748723
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,8 +852,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.15}
-  m_AnchoredPosition: {x: 0, y: -910}
-  m_SizeDelta: {x: 980, y: 273}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &7642144267975012077
 MonoBehaviour:
@@ -869,8 +875,8 @@ MonoBehaviour:
   hideEase: 21
   isAppScreenAnimation: 1
   fitSlidingPositionsToResolution: 1
-  referenceSlideInOffscreenPosition: {x: 0, y: -192}
-  referenceSlideOutOffscreenPosition: {x: 0, y: -192}
+  referenceSlideInOffscreenPosition: {x: 0, y: -288}
+  referenceSlideOutOffscreenPosition: {x: 0, y: -288}
 --- !u!1 &3717609300105642217
 GameObject:
   m_ObjectHideFlags: 0
@@ -932,8 +938,8 @@ MonoBehaviour:
   hideEase: 21
   isAppScreenAnimation: 1
   fitSlidingPositionsToResolution: 1
-  referenceSlideInOffscreenPosition: {x: 0, y: 384}
-  referenceSlideOutOffscreenPosition: {x: 0, y: 384}
+  referenceSlideInOffscreenPosition: {x: 0, y: 288}
+  referenceSlideOutOffscreenPosition: {x: 0, y: 288}
 --- !u!1 &4327847430002594309
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,8 +1186,8 @@ MonoBehaviour:
   hideEase: 21
   isAppScreenAnimation: 1
   fitSlidingPositionsToResolution: 1
-  referenceSlideInOffscreenPosition: {x: 0, y: -192}
-  referenceSlideOutOffscreenPosition: {x: 0, y: -192}
+  referenceSlideInOffscreenPosition: {x: 0, y: -288}
+  referenceSlideOutOffscreenPosition: {x: 0, y: -288}
 --- !u!1 &5623270053726560579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1531,10 +1537,10 @@ RectTransform:
   m_Father: {fileID: 1041640142778924773}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6520799859562870197
 GameObject:

@@ -113,15 +113,15 @@ namespace GreenNacho.AppManagement
                 appAlertDispatcher.ShowCustomWarningAlert(title, message, positiveText, positiveAction);
         }
 
-        public void DisplayConfirmation(string title, string message, string positiveText, string negativeText,
-                                        Action positiveAction = null, Action negativeAction = null)
+        public void DisplayConfirmation(string title, string message, string positiveText, string negativeText, string neutralText = null,
+                                        Action positiveAction = null, Action negativeAction = null, Action neutralAction = null)
         {
             if (showNativeAlerts)
-                appAlertDispatcher.ShowNativeConfirmationAlert(title, message, positiveText, negativeText,
-                                                                positiveAction, negativeAction);
+                appAlertDispatcher.ShowNativeConfirmationAlert(title, message, positiveText, negativeText, neutralText,
+                                                                positiveAction, negativeAction, neutralAction);
             else
-                appAlertDispatcher.ShowCustomConfirmationAlert(title, message, positiveText, negativeText,
-                                                                positiveAction, negativeAction);
+                appAlertDispatcher.ShowCustomConfirmationAlert(title, message, positiveText, negativeText, neutralText,
+                                                                positiveAction, negativeAction, neutralAction);
         }
 
         public void OnScreenOrientationChange(UnityAction unityAction)

@@ -53,25 +53,27 @@ namespace GreenNacho.AppManagement
             alert.Show();
         }
 
-        public void ShowNativeConfirmationAlert(string title, string message, string positiveText, string negativeText, 
-                                                Action positiveAction = null, Action negativeAction = null) 
-        {
-            Alert alert = new Alert(title, message);
-            AlertButton positiveButton = new AlertButton(positiveText, positiveAction);          
-            AlertButton negativeButton = new AlertButton(negativeText, negativeAction);          
-            
-            SetUpAlertButtons(ref alert, positiveButton, negativeButton);
-            alert.Show();
-        }
-
-        public void ShowCustomConfirmationAlert(string title, string message, string positiveText, string negativeText,
-                                                Action positiveAction = null, Action negativeAction = null) 
+        public void ShowNativeConfirmationAlert(string title, string message, string positiveText, string negativeText, string neutralText = null, 
+                                                Action positiveAction = null, Action negativeAction = null, Action neutralAction = null)
         {
             Alert alert = new Alert(title, message);
             AlertButton positiveButton = new AlertButton(positiveText, positiveAction);
             AlertButton negativeButton = new AlertButton(negativeText, negativeAction);
-            
-            SetUpAlertButtons(ref alert, positiveButton, negativeButton);
+            AlertButton neutralButton = new AlertButton(neutralText, neutralAction);
+  
+            SetUpAlertButtons(ref alert, positiveButton, negativeButton, neutralButton);
+            alert.Show();
+        }
+
+        public void ShowCustomConfirmationAlert(string title, string message, string positiveText, string negativeText, string neutralText = null,
+                                                Action positiveAction = null, Action negativeAction = null, Action neutralAction = null) 
+        {
+            Alert alert = new Alert(title, message);
+            AlertButton positiveButton = new AlertButton(positiveText, positiveAction);
+            AlertButton negativeButton = new AlertButton(negativeText, negativeAction);
+            AlertButton neutralButton = new AlertButton(neutralText, neutralAction);
+
+            SetUpAlertButtons(ref alert, positiveButton, negativeButton, neutralButton);
             alert.SetAdapter(customAlertAdapter);            
             alert.Show();
         }
