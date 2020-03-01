@@ -157,6 +157,17 @@ namespace MetaMonster
                                     buttonIndex);
         }
 
+        public void AddRoulette(int[] colorAmounts, int colorsAdded, int buttonIndex, uint toolID)
+        {
+            string toolName = String.Format(baseToolNames[(int)ToolType.Roulette], colorsAdded.ToString());
+
+            CreateToolButton(null,
+                                toolIconSpriteSets[(int)ToolType.Roulette],
+                                toolName,
+                                toolID,
+                                buttonIndex);
+        }
+
         public void MoveToConfigurationScreen(int toolTypeIndex)
         {
             toolsConfigurationPrompt.Dismiss();

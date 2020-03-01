@@ -47,5 +47,11 @@ namespace MetaMonster
             lastAssignedID++;
             mainScreen.AddTimer(timeSpan, buttonIndex, lastAssignedID);
         }
+
+        public void AddRoulette(int[] colorAmounts, int colorsAdded, int buttonIndex)
+        {
+            lastAssignedID++;
+            mainScreen.AddRoulette(colorAmounts, colorsAdded, buttonIndex, lastAssignedID);
+        }
     }
 }
