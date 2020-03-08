@@ -6,7 +6,7 @@ namespace MetaMonster
 {
     public class DieController : ToolController
     {
-        [Header("Die Controller UI References")]
+        [Header("UI References")]
         [SerializeField] TMP_Text dieNumberText = default;
 
         [Header("Die Roll Properties")]

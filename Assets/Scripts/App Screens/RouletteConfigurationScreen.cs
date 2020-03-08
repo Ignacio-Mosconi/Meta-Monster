@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,22 +11,12 @@ namespace MetaMonster
         [SerializeField] Image[] colorPromptImages = default;
         [SerializeField] OptionsPrompt colorOptionsPrompt = default;
 
-        [Header("Configuration Settings")]
-        [SerializeField] Color[] rouletteColors = default;
-
         int[] colorAmounts;
         int colorsAdded;
 
-        void OnValidate()
-        {
-            Array.Resize(ref rouletteOptionItems, rouletteColors.Length);
-            Array.Resize(ref addColorButtons, rouletteColors.Length);
-            Array.Resize(ref colorPromptImages, rouletteColors.Length);
-        }
-
         void Awake()
         {
-            colorAmounts = new int[rouletteColors.Length];
+            colorAmounts = new int[ToolsManager.Instance.RouletteColors.Length];
         }
 
         void OnEnable()
@@ -43,6 +32,8 @@ namespace MetaMonster
 
         void Start()
         {
+            Color[] rouletteColors = ToolsManager.Instance.RouletteColors;
+
             for (int i = 0; i < rouletteColors.Length; i++)
             {
                 int index = i;
@@ -65,13 +56,13 @@ namespace MetaMonster
 
             if (colorAmounts[colorIndex] == 0)
             {
-                rouletteOptionItems[colorIndex].gameObject.SetActive(true);
                 colorsAdded++;
+                rouletteOptionItems[colorIndex].gameObject.SetActive(true);
+                rouletteOptionItems[colorIndex].transform.SetSiblingIndex(colorsAdded);
             }
 
             colorAmounts[colorIndex]++;
             rouletteOptionItems[colorIndex].SetColorAmount(colorAmounts[colorIndex]);
-            rouletteOptionItems[colorIndex].transform.SetSiblingIndex(colorsAdded);
             
             colorOptionsPrompt.Dismiss();
         }

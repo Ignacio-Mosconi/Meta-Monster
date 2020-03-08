@@ -8,7 +8,7 @@ namespace MetaMonster
 {
     public class TimerController : ToolController
     {
-        [Header("Timer Controller UI References")]
+        [Header("UI References")]
         [SerializeField] TMP_Text timerText = default;
         [SerializeField] Image pauseStateIcon = default;
 

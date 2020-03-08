@@ -18,6 +18,11 @@ namespace MetaMonster
         [Header("Screen References")]
         [SerializeField] MainScreen mainScreen = default;
 
+        [Header("Tools' Settings")]
+        [SerializeField] Color[] rouletteColors = default;
+
+        public Color[] RouletteColors { get { return rouletteColors; } }
+
         List<uint> runningToolIDs = new List<uint>();
         uint lastAssignedID = 0;
 

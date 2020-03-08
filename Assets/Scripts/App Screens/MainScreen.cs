@@ -31,6 +31,7 @@ namespace MetaMonster
 
         [Header("Tools' Controllers")]
         [SerializeField] DieController dieController = default;
+        [SerializeField] RouletteController rouletteController = default;
         [SerializeField] TimerController timerController = default;
 
         [Header("Various Tools' Properties")]
@@ -161,7 +162,7 @@ namespace MetaMonster
         {
             string toolName = String.Format(baseToolNames[(int)ToolType.Roulette], colorsAdded.ToString());
 
-            CreateToolButton(null,
+            CreateToolButton(() => rouletteController.SpinRoulette(colorAmounts, toolID),
                                 toolIconSpriteSets[(int)ToolType.Roulette],
                                 toolName,
                                 toolID,
