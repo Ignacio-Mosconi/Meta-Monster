@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Die Controller
+  m_Name: Roulette Controller
   m_Controller: {fileID: 9100000, guid: 2224d39131ed55446b27300fc63cd6ba, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: ce38e35a6f2f02b449a1479cb4c45520, type: 2}

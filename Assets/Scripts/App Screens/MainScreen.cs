@@ -34,6 +34,9 @@ namespace MetaMonster
         [SerializeField] RouletteController rouletteController = default;
         [SerializeField] TimerController timerController = default;
 
+        [Header("App Camera")]
+        [SerializeField] AppCameraController appCameraController = default;
+
         [Header("Various Tools' Properties")]
         [SerializeField] string[] baseToolNames = new string[(int)ToolType.Count];
         [SerializeField] string uiModeAlertTitle = default;
@@ -173,6 +176,16 @@ namespace MetaMonster
         {
             toolsConfigurationPrompt.Dismiss();
             AppNavigator.Instance.MoveToScreen(toolConfigurationScreens[toolTypeIndex]);
+        }
+
+        public void TakePicture()
+        {
+            appCameraController.TakePicture();
+        }
+
+        public void RecordVideo()
+        {
+            appCameraController.RecordVideo();
         }
     }
 }
