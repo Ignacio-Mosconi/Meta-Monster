@@ -1,1 +1,2 @@
 -keep class com.yasirkula.unity.* { *; }
+-keep class com.yusufolokoba.natcorder.* { *; }

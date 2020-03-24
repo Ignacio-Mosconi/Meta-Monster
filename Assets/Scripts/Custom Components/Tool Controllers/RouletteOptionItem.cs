@@ -8,7 +8,6 @@ namespace MetaMonster
     public class RouletteOptionItem : MonoBehaviour
     {
         [Header("UI References")]
-        [SerializeField] GameObject colorContainer = default;
         [SerializeField] Button removeButton = default;
         [SerializeField] Image colorImage = default;
         [SerializeField] TMP_Text colorAmountText = default;

@@ -22,45 +22,75 @@ namespace MetaMonster
         [SerializeField] CameraRecorder cameraRecorder = default;
         [SerializeField] MediaSaver mediaSaver = default;
 
+        [Header("Recording Icons")]
+        [SerializeField] GameObject recordingIndicator = default;
+
         [Header("Media Preview")]
         [SerializeField] GameObject mediaPreviewPanel = default;
+        [SerializeField] VideoPlayer videoPlayer = default;
         [SerializeField] Image previewPicture = default;
-        [SerializeField] VideoPlayer previewVideo = default;
+        [SerializeField] RawImage previewVideo = default;
+
+        [Header("Other Properties")]
+        [SerializeField, Range(1f, 2f)] float holdTimeToStartRecording = default;
 
         UIAnimation[] previewAnimations;
-        UIAnimation pictureAnimation;
-        UIAnimation videoAnimation;
         AspectRatioFitter previewImageFitter;
-        AspectRatioFitter previewVideoFitter = default;
-        RawImage previewVideoRawImage;
+        AspectRatioFitter previewVideoFitter;
+        Coroutine recordingAttempt;
         MediaType mediaInPreview;
+        Texture2D lastPictureTaken;
+        string lastVideoPath;
+        float timeAtCameraButtonPressed;
 
         void Awake()
         {
             previewAnimations = mediaPreviewPanel.GetComponentsInChildren<UIAnimation>(includeInactive: true);
-            pictureAnimation = previewPicture.GetComponent<UIAnimation>();
-            videoAnimation = previewVideo.GetComponent<UIAnimation>();
             previewImageFitter = previewPicture.GetComponent<AspectRatioFitter>();
             previewVideoFitter = previewVideo.GetComponent<AspectRatioFitter>();
-            previewVideoRawImage = previewVideo.GetComponent<RawImage>();
+        }
+
+        void OnEnable()
+        {
+            cameraRecorder.OnPictureTaken += OnPictureTaken;
+            cameraRecorder.OnRecordingSaved += OnRecordingSaved;
+
+            mediaPreviewPanel.SetActive(false);
+            recordingIndicator.SetActive(false);
+        }
+
+        void OnDisable()
+        {
+            cameraRecorder.OnPictureTaken -= OnPictureTaken;
+            cameraRecorder.OnRecordingSaved -= OnRecordingSaved;
         }
 
         void Start()
         {
             for (int i = 0; i < previewAnimations.Length; i++)
                 previewAnimations[i].SetUp();
-            pictureAnimation.SetUp();
-            videoAnimation.SetUp();
+        }
 
-            mediaPreviewPanel.SetActive(false);
+        void OnPictureTaken(Texture2D picture)
+        {
+            lastPictureTaken = picture;
+            ShowPreviewPicture(picture);
+        }
+
+        void OnRecordingSaved(string videoPath)
+        {
+            lastVideoPath = videoPath;
+            PlayPreviewVideo(videoPath);
         }
 
         IEnumerator ShowVideoAfterPlayerPreparation()
         {
-            while (!previewVideo.isPrepared)
+            previewVideo.color = Color.clear;
+
+            while (!videoPlayer.isPrepared)
                 yield return new WaitForEndOfFrame();
 
-            previewVideoRawImage.color = Color.white;
+            previewVideo.color = Color.white;
         }
 
         void ShowPreviewPicture(Texture2D picture)
@@ -82,8 +112,6 @@ namespace MetaMonster
 
             for (int i = 0; i < previewAnimations.Length; i++)
                 showSequence.Insert(previewAnimations[i].ShowStartUpTime, previewAnimations[i].Show());
-
-            showSequence.Insert(pictureAnimation.ShowStartUpTime, pictureAnimation.Show());
         }
 
         void PlayPreviewVideo(string path)
@@ -93,46 +121,62 @@ namespace MetaMonster
             previewVideo.gameObject.SetActive(true);
             previewPicture.gameObject.SetActive(false);
 
-            previewVideoRawImage.color = Color.clear;
-            previewVideo.targetTexture.Release();
-            previewVideo.url = path;
-            previewVideo.Play();
+            mediaPreviewPanel.SetActive(true);
+
+            videoPlayer.targetTexture.Release();
+            videoPlayer.url = path;
+            videoPlayer.Play();
 
             StartCoroutine(ShowVideoAfterPlayerPreparation());
 
             previewVideoFitter.aspectRatio = (float)Screen.width / Screen.height;
-            mediaPreviewPanel.SetActive(true);
 
             Sequence showSequence = DOTween.Sequence();
 
             for (int i = 0; i < previewAnimations.Length; i++)
                 showSequence.Insert(previewAnimations[i].ShowStartUpTime, previewAnimations[i].Show());
-
-            showSequence.Insert(videoAnimation.ShowStartUpTime, videoAnimation.Show());
         }
 
-        public void TakePicture()
+        void StopRecordingAttempt()
         {
-            cameraRecorder.TakePicture(appCamera, () =>
+            if (recordingAttempt != null)
             {
-                Texture2D picture = cameraRecorder.LastPictureTaken;
-                PictureFormat pictureFormat = cameraRecorder.PictureFormat;
-
-                mediaSaver.SavePicture(picture, pictureFormat);
-                ShowPreviewPicture(picture);
-            });
+                StopCoroutine(recordingAttempt);
+                recordingAttempt = null;
+            }
         }
 
-        public void RecordVideo()
+        IEnumerator AttemptToRecord()
         {
-            cameraRecorder.StartRecording(appCamera, () =>
-            {
-                string videoPath = cameraRecorder.LastVideoTakenPath;
-                VideoFormat videoFormat = cameraRecorder.VideoFormat;
+            yield return new WaitForSeconds(holdTimeToStartRecording);
+            
+            recordingAttempt = null;
+            cameraRecorder.StartRecording(appCamera);
+            recordingIndicator.SetActive(true);
+        }
 
-                mediaSaver.SaveVideo(videoPath, videoFormat);
-                PlayPreviewVideo(videoPath);
-            });
+        public void OnCameraButtonDown()
+        {
+            timeAtCameraButtonPressed = Time.time;
+            recordingAttempt = StartCoroutine(AttemptToRecord());
+        }
+
+        public void OnCameraButtonClick()
+        {
+            float timeDiff = Time.time - timeAtCameraButtonPressed;
+
+            timeAtCameraButtonPressed = 0f;
+
+            if (timeDiff <= holdTimeToStartRecording)
+            {
+                StopRecordingAttempt();
+                cameraRecorder.TakePicture(appCamera);
+            }
+            else
+            {
+                cameraRecorder.StopRecording();
+                recordingIndicator.SetActive(false);
+            }
         }
 
         public void DismissMedia()
@@ -142,18 +186,29 @@ namespace MetaMonster
             for (int i = 0; i < previewAnimations.Length; i++)
                 hideSequence.Insert(previewAnimations[i].HideStartUpTime, previewAnimations[i].Hide());
 
-            if (mediaInPreview == MediaType.Picture)
-                hideSequence.Insert(pictureAnimation.HideStartUpTime, pictureAnimation.Hide());
-            else
-                hideSequence.Insert(videoAnimation.HideStartUpTime, videoAnimation.Hide());
-
-            hideSequence.OnComplete(() => 
+            hideSequence.OnComplete((TweenCallback)(() => 
             {
                 mediaInPreview = MediaType.None;
                 mediaPreviewPanel.SetActive(false);
                 previewPicture.gameObject.SetActive(false);
-                previewVideo.gameObject.SetActive(false);
-            });
+                this.previewVideo.gameObject.SetActive(false);
+            }));
+        }
+
+        public void SaveMedia()
+        {
+            if (mediaInPreview == MediaType.Picture)
+            {
+                PictureFormat pictureFormat = cameraRecorder.PictureFormat;  
+                mediaSaver.SavePicture(lastPictureTaken, pictureFormat);
+            }
+            else
+            {
+                VideoFormat videoFormat = cameraRecorder.VideoFormat;
+                mediaSaver.SaveVideo(lastVideoPath, videoFormat);
+            }
+
+            DismissMedia();
         }
     }
 }

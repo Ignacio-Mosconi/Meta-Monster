@@ -7,7 +7,7 @@ namespace GreenNacho.UI
     [RequireComponent(typeof(Button))]
     public class BackButton : MonoBehaviour
     {
-        [SerializeField] Image backButtonIcon;
+        [SerializeField] Image backButtonIcon = default;
 
         Button button;
         Color baseBackButtonColor;

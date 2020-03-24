@@ -24,130 +24,134 @@ namespace GreenNacho.AppCamera
         [SerializeField] PictureFormat pictureFormat = default;
         [SerializeField] VideoFormat videoFormat = default;
 
-        [Header("Microphone Properties")]
+        [Header("Recording Properties")]
         [SerializeField] AudioSource microphoneSource = default;
-        [SerializeField] bool recordMicrophone = false;
+        [SerializeField, Range(12, 60)] int targetFrameRate = default; 
+        [SerializeField, Range(0, 1920)] int targetWidth = default;
+        [SerializeField, Range(0, 1920)] int targetHeight = default;
 
-        public Texture2D LastPictureTaken { get; private set; }
-        public string LastVideoTakenPath { get; private set; }
         public PictureFormat PictureFormat { get { return pictureFormat; } }
         public VideoFormat VideoFormat { get { return videoFormat; } }
+        public Action<Texture2D> OnPictureTaken { get; set; }
+        public Action<string> OnRecordingSaved { get; set; }
 
-        MP4Recorder videoRecorder;
         IClock recordingClock;
+        IMediaRecorder mediaRecorder;
         CameraInput cameraInput;
         AudioInput audioInput;
+        string lastVideoPath;
+        bool microphoneActive = false;
 
-        void OnDisable()
+        void OnDestroy()
         {
-            if (LastVideoTakenPath != null)
-                File.Delete(LastVideoTakenPath);
+            DeleteLastVideo();
         }
 
-        void StartMicrophone()
+        void DeleteLastVideo()
         {
-            if (Application.platform == RuntimePlatform.WebGLPlayer)
-                return;
+            if (lastVideoPath != null)
+                File.Delete(lastVideoPath);
+        }
 
-            microphoneSource.clip = Microphone.Start(null, true, 60, 48000);
+        void OnRecordingFinished(string filePath)
+        {
+            DeleteLastVideo();
+            lastVideoPath = filePath;
+            OnRecordingSaved?.Invoke(filePath);
+        }
+
+        IEnumerator StartMicrophone()
+        {
+            if (Application.platform == RuntimePlatform.WebGLPlayer && !Application.isEditor)
+                yield break;
+
+            microphoneSource.clip = Microphone.Start(deviceName: null, loop: true, lengthSec: 60, frequency: 48000);
             
-            while (Microphone.GetPosition(null) <= 0) ;
+            while (Microphone.GetPosition(deviceName: null) <= 0)
+                yield return new WaitForEndOfFrame();
             
-            microphoneSource.timeSamples = Microphone.GetPosition(null);
+            microphoneSource.timeSamples = Microphone.GetPosition(deviceName: null);
             microphoneSource.loop = true;
             microphoneSource.Play();
+
+            microphoneActive = true;
         }
 
         void StopMicrophone()
         {
-            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            if (Application.platform == RuntimePlatform.WebGLPlayer && !Application.isEditor)
                 return;
 
             Microphone.End(null);
             microphoneSource.Stop();
+
+            microphoneActive = false;
         }
 
-        void LoadPreviewPicture(Texture2D picture)
-        {
-            LastPictureTaken = new Texture2D(picture.width, picture.height);
-            byte[] pictureBytes = (pictureFormat == PictureFormat.JPG) ? picture.EncodeToJPG() : picture.EncodeToPNG();
-
-            LastPictureTaken.LoadImage(pictureBytes);
-        }
-
-        void OnRecordingFinished(string videoPath, Action callback = null)
-        {
-            if (LastVideoTakenPath != null)
-                File.Delete(LastVideoTakenPath);
-
-            LastVideoTakenPath = videoPath;
-
-            callback?.Invoke();
-        }
-
-        IEnumerator CreatePicture(Camera appCamera, Action callback = null)
+        IEnumerator CaptureScreen(Camera appCamera)
         {
             yield return new WaitForEndOfFrame();
 
-            RenderTexture renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-            renderTexture.Create();
+            RenderTexture renderTexture;
+            Texture2D picture;
 
+            bool previousFullScreenState = Screen.fullScreen;
+
+            Screen.fullScreen = true;
+            renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
             appCamera.targetTexture = renderTexture;
             RenderTexture.active = renderTexture;
 
             appCamera.Render();
 
-            Texture2D picture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, mipChain: false);
-            Rect source = new Rect(0f, 0f, Screen.width, Screen.height);
+            Rect source = new Rect(0f, 0f, Screen.width, Screen.height);      
+            
+            picture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, mipChain: false);
 
             picture.ReadPixels(source, 0, 0);
             picture.Apply();
 
-            LoadPreviewPicture(picture);
-
+            Screen.fullScreen = previousFullScreenState;
             appCamera.targetTexture = null;
             RenderTexture.active = null;
+            renderTexture.Release();
 
-            Destroy(picture);
-            Destroy(renderTexture);
-
-            callback?.Invoke();
+            OnPictureTaken?.Invoke(picture);
         }
 
-        public void TakePicture(Camera appCamera, Action callback = null)
+        public void TakePicture(Camera appCamera)
         {
-            StartCoroutine(CreatePicture(appCamera, callback));
+            StartCoroutine(CaptureScreen(appCamera));
         }
 
-        public void StartRecording(Camera appCamera, Action callback = null)
+        public void StartRecording(Camera appCamera, bool recordMicrophone = true)
         {
+            mediaRecorder = new MP4Recorder(targetWidth, 
+                                            targetHeight, 
+                                            targetFrameRate, 
+                                            (recordMicrophone) ?  AudioSettings.outputSampleRate : 0,
+                                            (recordMicrophone) ? (int)AudioSettings.speakerMode : 0,
+                                            OnRecordingFinished);
             recordingClock = new RealtimeClock();
-            videoRecorder = new MP4Recorder(
-                Screen.width,
-                Screen.height,
-                Application.targetFrameRate,
-                recordMicrophone ? AudioSettings.outputSampleRate : 0,
-                recordMicrophone ? (int)AudioSettings.speakerMode : 0,
-                (path) => OnRecordingFinished(path)
-            );
-
-            cameraInput = new CameraInput(videoRecorder, recordingClock, appCamera);
+            cameraInput = new CameraInput(mediaRecorder, recordingClock, appCamera);
+            
             if (recordMicrophone)
             {
-                StartMicrophone();
-                audioInput = new AudioInput(videoRecorder, recordingClock, microphoneSource, true);
+                StartCoroutine(StartMicrophone());
+                audioInput = new AudioInput(mediaRecorder, recordingClock, microphoneSource);
             }
         }
 
         public void StopRecording()
         {
-            if (recordMicrophone)
+            if (microphoneActive)
             {
                 StopMicrophone();
-                audioInput.Dispose();
+                audioInput?.Dispose();
             }
-            cameraInput.Dispose();
-            videoRecorder.Dispose();
+
+            cameraInput?.Dispose();
+            mediaRecorder?.Dispose();
         }
     }
 }
