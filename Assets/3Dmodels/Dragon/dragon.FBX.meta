@@ -1,0 +1,177 @@
+fileFormatVersion: 2
+guid: 70bf6722f3cc26c4eb80b2a9266e135b
+timeCreated: 1583721457
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: RigHead
+    100004: RigJawDown
+    100006: RigJawUp
+    100008: RigLBackLeg1
+    100010: RigLBackLeg2
+    100012: RigLBackLegAnkle
+    100014: RigLBackLegFoot1
+    100016: RigLBackLegFoot2
+    100018: RigLFrontLeg1
+    100020: RigLFrontLeg2
+    100022: RigLFrontLegAnkle
+    100024: RigLFrontLegFoot1
+    100026: RigLFrontLegFoot2
+    100028: RigLWing1
+    100030: RigLWing2
+    100032: RigLWingIndex1
+    100034: RigLWingIndex2
+    100036: RigLWingMiddle1
+    100038: RigLWingMiddle2
+    100040: RigLWingPalm
+    100042: RigNeck1
+    100044: RigNeck2
+    100046: RigNeck3
+    100048: RigNeck4
+    100050: RigPelvis
+    100052: RigRBackLeg1
+    100054: RigRBackLeg2
+    100056: RigRBackLegAnkle
+    100058: RigRBackLegFoot1
+    100060: RigRBackLegFoot2
+    100062: RigRFrontLeg1
+    100064: RigRFrontLeg2
+    100066: RigRFrontLegAnkle
+    100068: RigRFrontLegFoot1
+    100070: RigRFrontLegFoot2
+    100072: RigRibcage
+    100074: RigRWing1
+    100076: RigRWing2
+    100078: RigRWingIndex1
+    100080: RigRWingIndex2
+    100082: RigRWingMiddle1
+    100084: RigRWingMiddle2
+    100086: RigRWingPalm
+    100088: RigSpine1
+    100090: RigSpine2
+    100092: RigSpine3
+    100094: Toon Dragon
+    400000: //RootNode
+    400002: RigHead
+    400004: RigJawDown
+    400006: RigJawUp
+    400008: RigLBackLeg1
+    400010: RigLBackLeg2
+    400012: RigLBackLegAnkle
+    400014: RigLBackLegFoot1
+    400016: RigLBackLegFoot2
+    400018: RigLFrontLeg1
+    400020: RigLFrontLeg2
+    400022: RigLFrontLegAnkle
+    400024: RigLFrontLegFoot1
+    400026: RigLFrontLegFoot2
+    400028: RigLWing1
+    400030: RigLWing2
+    400032: RigLWingIndex1
+    400034: RigLWingIndex2
+    400036: RigLWingMiddle1
+    400038: RigLWingMiddle2
+    400040: RigLWingPalm
+    400042: RigNeck1
+    400044: RigNeck2
+    400046: RigNeck3
+    400048: RigNeck4
+    400050: RigPelvis
+    400052: RigRBackLeg1
+    400054: RigRBackLeg2
+    400056: RigRBackLegAnkle
+    400058: RigRBackLegFoot1
+    400060: RigRBackLegFoot2
+    400062: RigRFrontLeg1
+    400064: RigRFrontLeg2
+    400066: RigRFrontLegAnkle
+    400068: RigRFrontLegFoot1
+    400070: RigRFrontLegFoot2
+    400072: RigRibcage
+    400074: RigRWing1
+    400076: RigRWing2
+    400078: RigRWingIndex1
+    400080: RigRWingIndex2
+    400082: RigRWingMiddle1
+    400084: RigRWingMiddle2
+    400086: RigRWingPalm
+    400088: RigSpine1
+    400090: RigSpine2
+    400092: RigSpine3
+    400094: Toon Dragon
+    4300000: Toon Dragon
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: Toon Dragon
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
