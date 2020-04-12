@@ -26,6 +26,15 @@ namespace MetaMonster
             Array.Resize(ref timeFields, (int)TimeComponent.Count);
         }
 
+        void OnEnable()
+        {
+            for (int i = 0; i < (int)TimeComponent.Count; i++)
+            {
+                timeFields[i].text = "";
+                timeValuesEntered[i] = 0;
+            }
+        }
+
         void Start()
         {
             for (int i = 0; i < timeFields.Length; i++)
