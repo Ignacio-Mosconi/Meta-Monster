@@ -1630,3 +1630,4 @@ MonoBehaviour:
   - {fileID: 5330573538541007605}
   - {fileID: 3012007740761984343}
   rouletteArrowContainer: {fileID: 5693441257514570433}
+  nonResultingColorDim: 0.5
