@@ -36,9 +36,9 @@ namespace MetaMonster
 
         [Header("Various Tools' Properties")]
         [SerializeField] string[] baseToolNames = new string[(int)ToolType.Count];
-        [SerializeField] string uiModeAlertTitle = default;
-        [SerializeField, TextArea(3, 5)] string uiModeAlertMessage = default;
-        [SerializeField] string[] uiModeAlertOptions = new string[3];
+        // [SerializeField] string uiModeAlertTitle = default;
+        // [SerializeField, TextArea(3, 5)] string uiModeAlertMessage = default;
+        // [SerializeField] string[] uiModeAlertOptions = new string[3];
 
         const int BasicUIModeTools = 4;
 
@@ -64,12 +64,12 @@ namespace MetaMonster
             
             toolsBin.gameObject.SetActive(false);
 
-            if (!SettingsManager.Instance.InAdvancedMode && !SettingsManager.Instance.DismissedAdvancedModeAlert)
-                AppManager.Instance.DisplayConfirmation(uiModeAlertTitle, uiModeAlertMessage, 
-                                                        uiModeAlertOptions[0], uiModeAlertOptions[1], uiModeAlertOptions[2],
-                                                        () => SetAdvancedMode(activate: true), 
-                                                        () => SetAdvancedMode(activate: false), 
-                                                        DismissAdvancedModeAlert);
+            // if (!SettingsManager.Instance.InAdvancedMode && !SettingsManager.Instance.DismissedAdvancedModeAlert)
+            //     AppManager.Instance.DisplayConfirmation(uiModeAlertTitle, uiModeAlertMessage, 
+            //                                             uiModeAlertOptions[0], uiModeAlertOptions[1], uiModeAlertOptions[2],
+            //                                             () => SetAdvancedMode(activate: true), 
+            //                                             () => SetAdvancedMode(activate: false), 
+            //                                             DismissAdvancedModeAlert);
         }
 
         void SetCurrentUIMode()

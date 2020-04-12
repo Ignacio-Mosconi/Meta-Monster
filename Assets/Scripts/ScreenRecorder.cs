@@ -41,29 +41,32 @@ namespace Recorder
         private const string VIDEO_NAME = "Record", GALLERY_PATH = "/../../../../DCIM/VideoRecorders";
         public static UnityAction onAllowCallback, onDenyCallback, onDenyAndNeverAskAgainCallback;
 #if UNITY_ANDROID && !UNITY_EDITOR
-    private AndroidJavaObject androidRecorder;
+        private AndroidJavaObject androidRecorder;
 #endif
         private void Start()
         {
             DontDestroyOnLoad(gameObject);
 #if UNITY_ANDROID && !UNITY_EDITOR
-        using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-        {
-            androidRecorder = unityClass.GetStatic<AndroidJavaObject>("currentActivity");
-            int width = (int)(Screen.width > SCREEN_WIDTH ? SCREEN_WIDTH : Screen.width);
-            int height = Screen.width > SCREEN_WIDTH ? (int)(Screen.height * SCREEN_WIDTH / Screen.width) : Screen.height;
-            androidRecorder.Call("setupVideo", width, height,(int)(1f * width * height / 100 * 240 * 7), 30);
-            androidRecorder.Call("setCallback","AndroidUtils","VideoRecorderCallback");
-        }
+            using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                androidRecorder = unityClass.GetStatic<AndroidJavaObject>("currentActivity");
+                int width = (int)(Screen.width > SCREEN_WIDTH ? SCREEN_WIDTH : Screen.width);
+                int height = Screen.width > SCREEN_WIDTH ? (int)(Screen.height * SCREEN_WIDTH / Screen.width) : Screen.height;
+                androidRecorder.Call("setupVideo", width, height,(int)(1f * width * height / 100 * 240 * 7), 30);
+                androidRecorder.Call("setCallback","AndroidUtils","VideoRecorderCallback");
+            }
 #endif
         }
+        
         private void OnDestroy()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-    androidRecorder.Call("cleanUpRecorder");
+        androidRecorder.Call("cleanUpRecorder");
 #endif
         }
+        
         #region Android Recorder
+        
         //Call this func before you start record video
         public void PrepareRecorder()
         {
@@ -87,19 +90,22 @@ namespace Recorder
         }
 #endif
         }
+        
         public void StartRecording()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-    androidRecorder.Call("startRecording");
+            androidRecorder.Call("startRecording");
 #endif
         }
+        
         public void StopRecording()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-    androidRecorder.Call("stopRecording");
+            androidRecorder.Call("stopRecording");
 #endif
         }
-        //this function will be call when record status change
+        
+        //this function will be called when record status changes
         public void VideoRecorderCallback(string message)
         {
             switch (message)
@@ -114,6 +120,7 @@ namespace Recorder
                     break;
             }
         }
+        
         public void SaveVideoToGallery()
         {
             //RECORD_AUDIO is declared inside plugin manifest but we need to request it manualy.Use call back to handle when user didn't accept the permsission
@@ -127,24 +134,27 @@ namespace Recorder
             else
                 StartCoroutine(_SaveVideoToGallery());
         }
+        
         private IEnumerator _SaveVideoToGallery()
         {
             yield return null;
 #if UNITY_ANDROID && !UNITY_EDITOR
-        System.DateTime now = System.DateTime.Now;
-        string fileName = "Video_" + now.Year + "_" + now.Month + "_" + now.Day + "_" + now.Hour + "_" + now.Minute + "_" + now.Second + ".mp4";
-        while (!System.IO.File.Exists(Application.persistentDataPath + "/" + VIDEO_NAME + ".mp4"))
+            System.DateTime now = System.DateTime.Now;
+            string fileName = "Video_" + now.Year + "_" + now.Month + "_" + now.Day + "_" + now.Hour + "_" + now.Minute + "_" + now.Second + ".mp4";
+            while (!System.IO.File.Exists(Application.persistentDataPath + "/" + VIDEO_NAME + ".mp4"))
+                yield return null;
+            if (!System.IO.Directory.Exists(Application.persistentDataPath + GALLERY_PATH))
+                System.IO.Directory.CreateDirectory(Application.persistentDataPath + GALLERY_PATH);
+            System.IO.File.Copy(Application.persistentDataPath + "/" + VIDEO_NAME + ".mp4", Application.persistentDataPath + GALLERY_PATH + "/" + fileName);
+            ShowToast("Video is saved to Gallery");
             yield return null;
-        if (!System.IO.Directory.Exists(Application.persistentDataPath + GALLERY_PATH))
-            System.IO.Directory.CreateDirectory(Application.persistentDataPath + GALLERY_PATH);
-        System.IO.File.Copy(Application.persistentDataPath + "/" + VIDEO_NAME + ".mp4", Application.persistentDataPath + GALLERY_PATH + "/" + fileName);
-        ShowToast("Video is saved to Gallery");
-        yield return null;
-        RefreshGallery(Application.persistentDataPath + GALLERY_PATH + "/" + fileName);
+            RefreshGallery(Application.persistentDataPath + GALLERY_PATH + "/" + fileName);
 #endif
         }
         #endregion
+        
         #region Android Permissions
+        
         //this function will be called when the permission has been approved
         private void OnAllow()
         {
@@ -152,6 +162,7 @@ namespace Recorder
                 onAllowCallback();
             ResetAllCallBacks();
         }
+        
         //this function will be called when the permission has been denied
         private void OnDeny()
         {
@@ -159,6 +170,7 @@ namespace Recorder
                 onDenyCallback();
             ResetAllCallBacks();
         }
+        
         //this function will be called when the permission has been denied and user tick to checkbox never ask again
         private void OnDenyAndNeverAskAgain()
         {
@@ -166,39 +178,45 @@ namespace Recorder
                 onDenyAndNeverAskAgainCallback();
             ResetAllCallBacks();
         }
+        
         private void ResetAllCallBacks()
         {
             onAllowCallback = null;
             onDenyCallback = null;
             onDenyAndNeverAskAgainCallback = null;
         }
+        
         public static bool IsPermitted(AndroidPermission permission)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        using (var androidUtils = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-        {
-            return androidUtils.GetStatic<AndroidJavaObject>("currentActivity").Call<bool>("hasPermission", GetPermissionStrr(permission));
-        }
+            using (var androidUtils = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                return androidUtils.GetStatic<AndroidJavaObject>("currentActivity").Call<bool>("hasPermission", GetPermissionStrr(permission));
+            }
 #endif
             return true;
         }
+        
         public static void RequestPermission(AndroidPermission permission, UnityAction onAllow = null, UnityAction onDeny = null, UnityAction onDenyAndNeverAskAgain = null)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        onAllowCallback = onAllow;
-        onDenyCallback = onDeny;
-        onDenyAndNeverAskAgainCallback = onDenyAndNeverAskAgain;
-        using (var androidUtils = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-        {
-            androidUtils.GetStatic<AndroidJavaObject>("currentActivity").Call("requestPermission", GetPermissionStrr(permission));
-        }
+            onAllowCallback = onAllow;
+            onDenyCallback = onDeny;
+            onDenyAndNeverAskAgainCallback = onDenyAndNeverAskAgain;
+            using (var androidUtils = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                androidUtils.GetStatic<AndroidJavaObject>("currentActivity").Call("requestPermission", GetPermissionStrr(permission));
+            }
 #endif
         }
+        
         private static string GetPermissionStrr(AndroidPermission permission)
         {
             return "android.permission." + permission.ToString();
         }
+        
         #endregion
+        
         public static void RefreshGallery(string path)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -207,6 +225,7 @@ namespace Recorder
         }
 #endif
         }
+        
         public static void OpenGallery()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -225,6 +244,7 @@ namespace Recorder
         }));
 #endif
         }
+        
         public static void ShareAndroid(string body, string subject, string url, string filePath, string mimeType, bool chooser, string chooserText)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
