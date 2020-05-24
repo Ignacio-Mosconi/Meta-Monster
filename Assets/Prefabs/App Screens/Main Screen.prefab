@@ -3012,6 +3012,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5215219629256949055, guid: bb4f18f415252204c98ac18cdbfa53cb,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2153719797247845202, guid: bb4f18f415252204c98ac18cdbfa53cb,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -3407,6 +3412,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341843126636700096, guid: 0d0e661d284806c4d94b48da643b7e4d,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8088666015435432176, guid: 0d0e661d284806c4d94b48da643b7e4d,
         type: 3}

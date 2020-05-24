@@ -509,9 +509,8 @@ GameObject:
   - component: {fileID: 8740938622608087549}
   - component: {fileID: 7468528629005049835}
   - component: {fileID: 6846461572194549098}
-  - component: {fileID: 8234242065091407575}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: Record Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -534,7 +533,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 195, y: -75}
-  m_SizeDelta: {x: 120, y: 70.32}
+  m_SizeDelta: {x: 132.1, y: 67.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7468528629005049835
 CanvasRenderer:
@@ -566,9 +565,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Rec
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 435584a6068bcbd448c0e80fd8727bf6, type: 2}
-  m_sharedMaterial: {fileID: -253662967497725077, guid: 435584a6068bcbd448c0e80fd8727bf6,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -657,26 +655,6 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8234242065091407575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1822643002027025114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 120
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
 --- !u!1 &1938456700548377163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1689,7 +1667,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 85, y: -75}
+  m_AnchoredPosition: {x: 78.95, y: -75}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3677205071753655427
@@ -1861,8 +1839,8 @@ MonoBehaviour:
   videoFormat: 0
   microphoneSource: {fileID: 159009279176947837}
   targetFrameRate: 30
-  targetWidth: 720
-  targetHeight: 1280
+  targetWidth: 1080
+  targetHeight: 1920
 --- !u!82 &159009279176947837
 AudioSource:
   m_ObjectHideFlags: 0

@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Collections;
 using UnityEngine;
-using NatCorder;
-using NatCorder.Clocks;
-using NatCorder.Inputs;
+using NatSuite.Recorders;
+using NatSuite.Recorders.Clocks;
+using NatSuite.Recorders.Inputs;
 
 namespace GreenNacho.AppCamera
 {
@@ -62,16 +62,17 @@ namespace GreenNacho.AppCamera
 
         IEnumerator StartMicrophone()
         {
-            if (Application.platform == RuntimePlatform.WebGLPlayer && !Application.isEditor)
-                yield break;
+            int minFrequency, maxFrequency;
+            Microphone.GetDeviceCaps(deviceName: null, out minFrequency, out maxFrequency);
 
-            microphoneSource.clip = Microphone.Start(deviceName: null, loop: true, lengthSec: 60, frequency: 48000);
-            
-            while (Microphone.GetPosition(deviceName: null) <= 0)
-                yield return new WaitForEndOfFrame();
-            
-            microphoneSource.timeSamples = Microphone.GetPosition(deviceName: null);
+            microphoneSource.mute = false;
             microphoneSource.loop = true;
+            microphoneSource.bypassEffects = false;
+            microphoneSource.bypassListenerEffects = false;
+            microphoneSource.clip = Microphone.Start(deviceName: null, loop: true, lengthSec: 60, maxFrequency);
+
+            yield return new WaitUntil(() => Microphone.GetPosition(deviceName: null) <= 0);
+            
             microphoneSource.Play();
 
             microphoneActive = true;
@@ -79,11 +80,8 @@ namespace GreenNacho.AppCamera
 
         void StopMicrophone()
         {
-            if (Application.platform == RuntimePlatform.WebGLPlayer && !Application.isEditor)
-                return;
-
-            Microphone.End(null);
             microphoneSource.Stop();
+            Microphone.End(null);
 
             microphoneActive = false;
         }
@@ -130,19 +128,18 @@ namespace GreenNacho.AppCamera
                                             targetHeight, 
                                             targetFrameRate, 
                                             (recordMicrophone) ?  AudioSettings.outputSampleRate : 0,
-                                            (recordMicrophone) ? (int)AudioSettings.speakerMode : 0,
-                                            OnRecordingFinished);
+                                            (recordMicrophone) ? (int)AudioSettings.speakerMode : 0);
             recordingClock = new RealtimeClock();
             cameraInput = new CameraInput(mediaRecorder, recordingClock, appCamera);
             
             if (recordMicrophone)
             {
                 StartCoroutine(StartMicrophone());
-                audioInput = new AudioInput(mediaRecorder, recordingClock, microphoneSource);
+                audioInput = new AudioInput(mediaRecorder, recordingClock, microphoneSource, mute: true);
             }
         }
 
-        public void StopRecording()
+        public async void StopRecording()
         {
             if (microphoneActive)
             {
@@ -151,7 +148,10 @@ namespace GreenNacho.AppCamera
             }
 
             cameraInput?.Dispose();
-            mediaRecorder?.Dispose();
+            
+            string videoPath = await mediaRecorder.FinishWriting();
+
+            OnRecordingFinished(videoPath);
         }
     }
 }
