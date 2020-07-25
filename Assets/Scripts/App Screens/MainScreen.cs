@@ -29,6 +29,9 @@ namespace MetaMonster
         [SerializeField] RectTransform advancedToolsContainer = default;
         [SerializeField] ToolBin toolsBin = default;
 
+        [Header("Camera Controller")]
+        [SerializeField] AppCameraController appCameraController = default;
+
         [Header("Tools' Controllers")]
         [SerializeField] DieController dieController = default;
         [SerializeField] RouletteController rouletteController = default;
@@ -39,6 +42,8 @@ namespace MetaMonster
         // [SerializeField] string uiModeAlertTitle = default;
         // [SerializeField, TextArea(3, 5)] string uiModeAlertMessage = default;
         // [SerializeField] string[] uiModeAlertOptions = new string[3];
+
+        GameObject currentUI;
 
         const int BasicUIModeTools = 4;
 
@@ -61,6 +66,9 @@ namespace MetaMonster
             AdvancedToolButton.ToolBin = toolsBin;
             AdvancedToolButton.Container = advancedToolsContainer;
             AdvancedToolButton.ScreenTransform = GetComponent<RectTransform>();
+
+            appCameraController.OnStartedTakingFootage.AddListener(() => currentUI.SetActive(false));
+            appCameraController.OnFootageDismissed.AddListener(() => currentUI.SetActive(true));
             
             toolsBin.gameObject.SetActive(false);
 
@@ -69,24 +77,21 @@ namespace MetaMonster
             //                                             uiModeAlertOptions[0], uiModeAlertOptions[1], uiModeAlertOptions[2],
             //                                             () => SetAdvancedMode(activate: true), 
             //                                             () => SetAdvancedMode(activate: false), 
-            //                                             DismissAdvancedModeAlert);
+            //                                             SettingsManager.Instance.DismissAdvancedModeAlert;);
         }
 
         void SetCurrentUIMode()
         {
             advancedUI.SetActive(SettingsManager.Instance.InAdvancedMode);
             basicUI.SetActive(!SettingsManager.Instance.InAdvancedMode);
+            
+            currentUI = (SettingsManager.Instance.InAdvancedMode) ? advancedUI : basicUI;
         }
 
         void SetAdvancedMode(bool activate)
         {
             SettingsManager.Instance.SaveAdvancedModePreference(activate);
             SetCurrentUIMode();
-        }
-
-        void DismissAdvancedModeAlert()
-        {
-            SettingsManager.Instance.DismissAdvancedModeAlert();
         }
 
         void CreateToolButton(Action onClickAction, ButtonSpriteSet buttonSpriteSet, string toolName, uint toolID, int buttonIndex = -1)

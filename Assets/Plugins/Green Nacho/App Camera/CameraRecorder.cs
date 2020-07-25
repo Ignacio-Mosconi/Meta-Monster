@@ -86,51 +86,43 @@ namespace GreenNacho.AppCamera
             microphoneActive = false;
         }
 
-        IEnumerator CaptureScreen(Camera appCamera)
+        IEnumerator CaptureScreen()
         {
             yield return new WaitForEndOfFrame();
 
-            RenderTexture renderTexture;
-            Texture2D picture;
-
+            Texture2D picture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, mipChain: false);
+            Rect source = new Rect(0f, 0f, Screen.width, Screen.height);      
             bool previousFullScreenState = Screen.fullScreen;
 
             Screen.fullScreen = true;
-            renderTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
-            appCamera.targetTexture = renderTexture;
-            RenderTexture.active = renderTexture;
-
-            appCamera.Render();
-
-            Rect source = new Rect(0f, 0f, Screen.width, Screen.height);      
-            
-            picture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, mipChain: false);
 
             picture.ReadPixels(source, 0, 0);
             picture.Apply();
 
             Screen.fullScreen = previousFullScreenState;
-            appCamera.targetTexture = null;
-            RenderTexture.active = null;
-            renderTexture.Release();
 
             OnPictureTaken?.Invoke(picture);
         }
 
-        public void TakePicture(Camera appCamera)
+        public void TakePicture()
         {
-            StartCoroutine(CaptureScreen(appCamera));
+            StartCoroutine(CaptureScreen());
         }
 
-        public void StartRecording(Camera appCamera, bool recordMicrophone = true)
+        public void StartRecording(Camera camera, bool recordMicrophone = true)
         {
-            mediaRecorder = new MP4Recorder(targetWidth, 
-                                            targetHeight, 
-                                            targetFrameRate, 
-                                            (recordMicrophone) ?  AudioSettings.outputSampleRate : 0,
-                                            (recordMicrophone) ? (int)AudioSettings.speakerMode : 0);
+            int sampleRate = 0;
+            int channelCount = 0;
+
+            if (recordMicrophone)
+            {
+                sampleRate = AudioSettings.outputSampleRate;
+                channelCount = (int)AudioSettings.speakerMode;
+            }
+
+            mediaRecorder = new MP4Recorder(targetWidth, targetHeight, targetFrameRate, sampleRate, channelCount);
             recordingClock = new RealtimeClock();
-            cameraInput = new CameraInput(mediaRecorder, recordingClock, appCamera);
+            cameraInput = new CameraInput(mediaRecorder, recordingClock, camera);
             
             if (recordMicrophone)
             {

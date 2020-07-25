@@ -298,6 +298,7 @@ MonoBehaviour:
   advancedUI: {fileID: 6272683883481115345}
   advancedToolsContainer: {fileID: 81614630960072557}
   toolsBin: {fileID: 2472379133992251769}
+  appCameraController: {fileID: 5299586868207951665}
   dieController: {fileID: 7355943277294800815}
   rouletteController: {fileID: 5974596501746908455}
   timerController: {fileID: 3757385802110280069}

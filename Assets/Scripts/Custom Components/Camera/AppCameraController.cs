@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using UnityEngine.Video;
 using DG.Tweening;
 using GreenNacho.AppCamera;
@@ -17,8 +18,10 @@ namespace MetaMonster
 
     public class AppCameraController : MonoBehaviour
     {
-        [Header("Camera Components")]
+        [Header("Cameras")]
         [SerializeField] Camera appCamera = default;
+
+        [Header("Camera Components")]
         [SerializeField] CameraRecorder cameraRecorder = default;
         [SerializeField] MediaSaver mediaSaver = default;
 
@@ -31,6 +34,9 @@ namespace MetaMonster
         [SerializeField] Image previewPicture = default;
         [SerializeField] RawImage previewVideo = default;
 
+        [Header("Media Frames")]
+        [SerializeField] GameObject pictureFrame = default;
+
         [Header("Other Properties")]
         [SerializeField, Range(1f, 2f)] float holdTimeToStartRecording = default;
 
@@ -42,6 +48,9 @@ namespace MetaMonster
         Texture2D lastPictureTaken;
         string lastVideoPath;
         float timeAtCameraButtonPressed;
+
+        public UnityEvent OnStartedTakingFootage { get; private set; } = new UnityEvent();
+        public UnityEvent OnFootageDismissed { get; private set; } = new UnityEvent();
 
         void Awake()
         {
@@ -57,6 +66,7 @@ namespace MetaMonster
 
             mediaPreviewPanel.SetActive(false);
             recordingIndicator.SetActive(false);
+            pictureFrame.SetActive(false);
         }
 
         void OnDisable()
@@ -74,6 +84,8 @@ namespace MetaMonster
         void OnPictureTaken(Texture2D picture)
         {
             lastPictureTaken = picture;
+
+            pictureFrame.SetActive(false);
             ShowPreviewPicture(picture);
         }
 
@@ -153,6 +165,8 @@ namespace MetaMonster
             recordingAttempt = null;
             cameraRecorder.StartRecording(appCamera);
             recordingIndicator.SetActive(true);
+
+            OnStartedTakingFootage.Invoke();
         }
 
         public void OnCameraButtonDown()
@@ -170,7 +184,9 @@ namespace MetaMonster
             if (timeDiff <= holdTimeToStartRecording)
             {
                 StopRecordingAttempt();
-                cameraRecorder.TakePicture(appCamera);
+                pictureFrame.SetActive(true);
+                OnStartedTakingFootage.Invoke();
+                cameraRecorder.TakePicture();
             }
             else
             {
@@ -191,7 +207,9 @@ namespace MetaMonster
                 mediaInPreview = MediaType.None;
                 mediaPreviewPanel.SetActive(false);
                 previewPicture.gameObject.SetActive(false);
-                this.previewVideo.gameObject.SetActive(false);
+                previewVideo.gameObject.SetActive(false);
+
+                OnFootageDismissed.Invoke();
             }));
         }
 
