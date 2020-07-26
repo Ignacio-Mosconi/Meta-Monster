@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,6 +40,8 @@ namespace MetaMonster
 
         [Header("Other Properties")]
         [SerializeField, Range(1f, 2f)] float holdTimeToStartRecording = default;
+        [SerializeField] string shareMediaTitle = default;
+        [SerializeField] string shareMediaText = default;
 
         UIAnimation[] previewAnimations;
         AspectRatioFitter previewImageFitter;
@@ -169,6 +172,20 @@ namespace MetaMonster
             OnStartedTakingFootage.Invoke();
         }
 
+        void SavePreviewMedia()
+        {
+            if (mediaInPreview == MediaType.Picture)
+            {
+                PictureFormat pictureFormat = cameraRecorder.PictureFormat;
+                mediaSaver.SavePicture(lastPictureTaken, pictureFormat);
+            }
+            else
+            {
+                VideoFormat videoFormat = cameraRecorder.VideoFormat;
+                mediaSaver.SaveVideo(lastVideoPath, videoFormat);
+            }
+        }
+
         public void OnCameraButtonDown()
         {
             timeAtCameraButtonPressed = Time.time;
@@ -215,18 +232,28 @@ namespace MetaMonster
 
         public void SaveMedia()
         {
+            SavePreviewMedia();
+            DismissMedia();
+        }
+
+        public void ShareMedia()
+        {
+            NativeShare nativeShare = new NativeShare();
+            string filePath;
+
             if (mediaInPreview == MediaType.Picture)
             {
-                PictureFormat pictureFormat = cameraRecorder.PictureFormat;  
-                mediaSaver.SavePicture(lastPictureTaken, pictureFormat);
+                filePath = Path.Combine(Application.temporaryCachePath, "shared_picture.jpg");
+                File.WriteAllBytes(filePath, lastPictureTaken.EncodeToJPG());
             }
             else
-            {
-                VideoFormat videoFormat = cameraRecorder.VideoFormat;
-                mediaSaver.SaveVideo(lastVideoPath, videoFormat);
-            }
+                filePath = lastVideoPath;
 
-            DismissMedia();
+            nativeShare.SetTitle(shareMediaTitle);
+            nativeShare.SetText(shareMediaText);
+            nativeShare.AddFile(filePath);
+
+            nativeShare.Share();
         }
     }
 }

@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 390, y: -96}
   m_SizeDelta: {x: 150, y: 150}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3128094683452404862
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -139,7 +139,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7831337046731837232}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6181363826105182311}
+        m_MethodName: ShareMedia
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &797403292058533132
@@ -384,7 +395,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 230, y: -96}
   m_SizeDelta: {x: 150, y: 150}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3458603642020636550
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -861,7 +872,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   appCamera: {fileID: 0}
-  mediaOverlayCamera: {fileID: 0}
   cameraRecorder: {fileID: 1225181766841895969}
   mediaSaver: {fileID: 2193335907426225678}
   recordingIndicator: {fileID: 2113534726993736853}
@@ -871,6 +881,8 @@ MonoBehaviour:
   previewVideo: {fileID: 2359231954871424588}
   pictureFrame: {fileID: 7438810260464584214}
   holdTimeToStartRecording: 1.2
+  shareMediaTitle: Captura de Meta Monster
+  shareMediaText: Enviado desde Meta Monster.
 --- !u!1 &2967593459928507544
 GameObject:
   m_ObjectHideFlags: 0
