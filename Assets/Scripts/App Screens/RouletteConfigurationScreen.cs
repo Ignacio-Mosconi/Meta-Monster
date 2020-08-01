@@ -9,6 +9,7 @@ namespace MetaMonster
         [SerializeField] RouletteOptionItem[] rouletteOptionItems = default;
         [SerializeField] Button[] addColorButtons = default;
         [SerializeField] Image[] colorPromptImages = default;
+        [SerializeField] GameObject addToolButtonPanel = default;
         [SerializeField] OptionsPrompt colorOptionsPrompt = default;
 
         int[] colorAmounts;
@@ -22,6 +23,7 @@ namespace MetaMonster
         void OnEnable()
         {
             colorsAdded = 0;
+            addToolButtonPanel.SetActive(false);
 
             for (int i = 0; i < rouletteOptionItems.Length; i++)
             {
@@ -63,7 +65,10 @@ namespace MetaMonster
 
             colorAmounts[colorIndex]++;
             rouletteOptionItems[colorIndex].SetColorAmount(colorAmounts[colorIndex]);
-            
+
+            if (colorsAdded > 0)
+                addToolButtonPanel.SetActive(true);
+
             colorOptionsPrompt.Dismiss();
         }
 
@@ -80,6 +85,9 @@ namespace MetaMonster
                 rouletteOptionItems[colorIndex].gameObject.SetActive(false);
                 colorsAdded--;
             }
+
+            if (colorsAdded == 0)
+                addToolButtonPanel.SetActive(false);
         }
 
         protected override void OnAddToolConfiguration()

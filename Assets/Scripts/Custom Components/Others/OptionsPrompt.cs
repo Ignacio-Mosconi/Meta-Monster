@@ -21,6 +21,11 @@ namespace MetaMonster
             DisablePromptElements();
         }
 
+        void OnEnable()
+        {
+            DisablePromptElements();
+        }
+
         void EnablePromptElements()
         {
             prompt.SetActive(true);
