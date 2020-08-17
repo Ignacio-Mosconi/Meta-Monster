@@ -6,15 +6,16 @@ using UnityEngine.Events;
 using UnityEngine.Android;
 using PaperPlaneTools;
 using DG.Tweening;
+using GreenNacho.Common;
+using GreenNacho.UI;
 
 namespace GreenNacho.AppManagement
 {
-    using Common;
-    using UI;
 
     public class AppManager : MonoBehaviourSingleton<AppManager>
     {
         [Header("Configurations")]
+        [SerializeField, Range(30, 120)] int targetFrameRate = 60;
         [SerializeField] bool showNativeAlerts = true;
         [SerializeField] bool useAppCamera = true;
 
@@ -46,6 +47,7 @@ namespace GreenNacho.AppManagement
 
         void Start()
         {
+            Application.targetFrameRate = targetFrameRate;
             RequestPermissions();
         }
 

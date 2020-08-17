@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1588d8273b02b848ac50e9b10dae2d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAppMenuAvailable: 0
+  isAppMenuAvailable: 1
   isBackHeaderAvailable: 0
   isAppHeaderAvailable: 0
   isAppFooterAvailable: 0

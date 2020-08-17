@@ -19,6 +19,7 @@ namespace GreenNacho.UI
         [SerializeField] bool enableMenuSlide = true;
         [SerializeField] RectTransform fingerSlideStartBlocker = default;
         [SerializeField, Range(0.1f, 0.2f)] float viewportDragPositionShow = 0.1f;
+        [SerializeField, Range(0f, 0.2f)] float viewportTopBottomPadding = 0.1f;
         [SerializeField, Range(0f, 1f)] float showDeltaPercentage = 0.5f;
         [SerializeField, Range(0f, 1f)] float hideDeltaPercentage = 0.3f;
 
@@ -53,8 +54,8 @@ namespace GreenNacho.UI
             menuActivationDelta = slidingMenuRectTransform.rect.size.x * showDeltaPercentage;
             menuDeactivationDelta = -slidingMenuRectTransform.rect.size.x * hideDeltaPercentage;
 
-            fingerSlideStartBlocker.anchorMin = Vector2.zero;
-            fingerSlideStartBlocker.anchorMax = new Vector2(viewportDragPositionShow, 1f);
+            fingerSlideStartBlocker.anchorMin = new Vector2(0f, viewportTopBottomPadding);
+            fingerSlideStartBlocker.anchorMax = new Vector2(viewportDragPositionShow, 1f - viewportTopBottomPadding);
 
             menuButton?.onClick.AddListener(ShowMenu);
             closeButton?.onClick.AddListener(HideMenu);
